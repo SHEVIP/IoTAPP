@@ -18,10 +18,7 @@ dependencies:
   http: ^0.13.3
   fl_chart: ^0.36.0
   table_calendar: ^3.0.9
-#  charts_flutter:
-#    git:
-#      url: https://github.com/google/charts.git
-#      path: charts_flutter
+  intl: ^0.18.0
 
 # 开发依赖
 dev_dependencies:

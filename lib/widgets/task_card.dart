@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class CustomRow extends StatelessWidget {
+class TaskCard extends StatelessWidget {
   final List<List<String>> blockData;
 
-  CustomRow({required this.blockData});
+  const TaskCard({super.key, required this.blockData});
 
   @override
   Widget build(BuildContext context) {
@@ -14,22 +14,22 @@ class CustomRow extends StatelessWidget {
 
       return Expanded(
         child: Container(
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           color: Colors.black,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 blockName,
-                style: TextStyle(fontSize: 15, color: Colors.white),
+                style: const TextStyle(fontSize: 15, color: Colors.white),
               ),
               Text(
                 line1,
-                style: TextStyle(fontSize: 15, color: Colors.white),
+                style: const TextStyle(fontSize: 15, color: Colors.white),
               ),
               Text(
                 line2,
-                style: TextStyle(fontSize: 15, color: Colors.white),
+                style: const TextStyle(fontSize: 15, color: Colors.white),
               ),
             ],
           ),

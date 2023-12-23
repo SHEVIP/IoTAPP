@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/components/info/message_scroll.dart';
 import 'package:untitled/views/info/my_info_detail_page.dart';
-import '../../components/rank_page.dart';
 import 'work_hours_details_page.dart';
 
 class MyInfoPage extends StatelessWidget {
@@ -104,26 +103,26 @@ class MyInfoPage extends StatelessWidget {
               ],
             ),
           ),
-          InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RankPage()),
-              );
-            },
-            child: Container(
-              height: 60.0,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 25.0, vertical: 5.0),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('工时排行榜', style: TextStyle(fontSize: 16)),
-                  Icon(Icons.arrow_forward_ios, size: 16),
-                ],
-              ),
-            ),
-          ),
+          // InkWell(
+          //   onTap: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => const RankPage()),
+          //     );
+          //   },
+          //   child: Container(
+          //     height: 60.0,
+          //     padding:
+          //         const EdgeInsets.symmetric(horizontal: 25.0, vertical: 5.0),
+          //     child: const Row(
+          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //       children: [
+          //         Text('工时排行榜', style: TextStyle(fontSize: 16)),
+          //         Icon(Icons.arrow_forward_ios, size: 16),
+          //       ],
+          //     ),
+          //   ),
+          // ),
           const MessageScroll(),
         ],
       ),

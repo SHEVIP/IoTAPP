@@ -12,7 +12,6 @@ class WorkHoursDetailsPage extends StatefulWidget {
 }
 
 class _WorkHoursDetailsPageState extends State<WorkHoursDetailsPage> {
-  final CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
 
@@ -28,10 +27,9 @@ class _WorkHoursDetailsPageState extends State<WorkHoursDetailsPage> {
     var result = await NetworkUtil.getInstance().get(
         "workerAttendance/workerAttendances?start=1&limit=10&worker_id=$workerId&date=---')");
     debugPrint('接口数据：${result?.data}');
-    print("111");
 
     if (result?.data['status'] == 200) {
-      var items = result?.data['data'] as List;
+      var items = result?.data['data']['item'];
       setState(() {
         _userWorkHours = Map.fromIterable(
           items,
@@ -57,17 +55,12 @@ class _WorkHoursDetailsPageState extends State<WorkHoursDetailsPage> {
       ),
       body: Column(
         children: <Widget>[
-          // 第一部分: 日期选择器
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 50.0, vertical: 8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                const Text('日期'),
-                const SizedBox(width: 16),
-                const Text('年'),
-                const SizedBox(width: 16),
-                // 年份选择器
                 DropdownButton<int>(
                   value: _focusedDay.year,
                   items: [
@@ -90,10 +83,7 @@ class _WorkHoursDetailsPageState extends State<WorkHoursDetailsPage> {
                     }
                   },
                 ),
-                const SizedBox(width: 16), // 间隔
-                const Text('月'),
-                const SizedBox(width: 16), // 间隔
-                // 月份选择器
+                const Text('年'),
                 DropdownButton<int>(
                   value: _focusedDay.month,
                   items: [for (var month = 1; month <= 12; month++) month]
@@ -112,36 +102,39 @@ class _WorkHoursDetailsPageState extends State<WorkHoursDetailsPage> {
                     }
                   },
                 ),
+                const Text('月'),
               ],
             ),
           ),
-          // 第二部分: 日历视图
           TableCalendar(
             firstDay: DateTime.utc(2010, 1, 1),
             lastDay: DateTime.utc(2222, 12, 30),
-            headerStyle: HeaderStyle(
+            headerStyle: const HeaderStyle(
               formatButtonVisible: false,
             ),
+            calendarFormat: CalendarFormat.month,
+            locale: 'zh_CN',
+            focusedDay: _focusedDay,
             calendarBuilders: CalendarBuilders(
               defaultBuilder: (context, day, focusedDay) {
                 return Container(
                   alignment: Alignment.center,
-                  margin: const EdgeInsets.all(4.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Text(
-                        '${day.day}', // 显示日期
-                        style: const TextStyle().copyWith(fontSize: 16.0), // 设置日期字体样式
+                        '${day.day}',
+                        style: const TextStyle().copyWith(fontSize: 16.0),
                       ),
-                      if (_userWorkHours.containsKey(day)) // 如果这一天有工作小时数据
+                      // 有工作记录则显示数据
+                      if (_userWorkHours.containsKey(day))
                         Padding(
                           padding: const EdgeInsets.only(top: 2.0),
                           child: Text(
-                            '${_userWorkHours[day]}小时', // 显示工作小时数
+                            '${_userWorkHours[day]}小时',
                             style: const TextStyle(
-                              fontSize: 12.0, // 工作小时字体大小
-                              color: Colors.blue, // 工作小时字体颜色
+                              fontSize: 12.0,
+                              color: Colors.blue,
                             ),
                           ),
                         ),
@@ -150,10 +143,6 @@ class _WorkHoursDetailsPageState extends State<WorkHoursDetailsPage> {
                 );
               },
             ),
-
-            focusedDay: _focusedDay,
-            calendarFormat: _calendarFormat,
-            locale: 'zh_CN',
             onDaySelected: (selectedDay, focusedDay) {
               setState(() {
                 _selectedDay = selectedDay;
@@ -163,27 +152,23 @@ class _WorkHoursDetailsPageState extends State<WorkHoursDetailsPage> {
             onPageChanged: (focusedDay) {
               setState(() {
                 _focusedDay = focusedDay;
-                // 将_selectedDay更新为新月份的第一天
                 _selectedDay = DateTime(focusedDay.year, focusedDay.month, 1);
               });
             },
-            // Configure calendar appearance and behavior
-            // ... (additional configuration)
           ),
-          const SizedBox(height: 16), // 间隔
-          // 第三部分: 显示累计工时
+          const SizedBox(height: 16),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(
+                const Text(
                   '累计工时:',
                   style: TextStyle(fontSize: 22),
                 ),
                 Text(
                   '${_calculateTotalWorkHours()}小时',
-                  style: TextStyle(fontSize: 22), // 自定义字号
+                  style: const TextStyle(fontSize: 22),
                 ),
               ],
             ),
@@ -193,7 +178,7 @@ class _WorkHoursDetailsPageState extends State<WorkHoursDetailsPage> {
     );
   }
 
-  // 计算累计工时的函数
+  // 累计工时
   double _calculateTotalWorkHours() {
     // 这里简化处理，实际应用应当考虑更复杂的逻辑
     return _userWorkHours.entries

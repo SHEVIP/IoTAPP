@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:untitled/utils/network_util.dart';
 import 'package:untitled/utils/prefs_util.dart';
 
-import '../model/user.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -17,7 +15,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   _login() async {
-    Map params = Map();
+    Map params = {};
     params["phone"] = _phoneController.text;
     params["password"] = _passwordController.text;
 

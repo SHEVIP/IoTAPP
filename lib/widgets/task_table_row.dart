@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
 
+class TaskTableRow extends StatelessWidget {
+  const TaskTableRow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+
+}
+
 TableRow createCustomTableRow(
-    String header1,
-    String header2,
-    String header3,
-    String header4,
-    String header5,
-    String header6,
-    String header7,
-    String header8, {
-      FontWeight fontWeight = FontWeight.normal,
-    }) {
+  String header1,
+  String header2,
+  String header3,
+  String header4,
+  String header5,
+  String header6,
+  String header7,
+  String header8, {
+  FontWeight fontWeight = FontWeight.normal,
+}) {
   return TableRow(
     children: [
       TableCell(

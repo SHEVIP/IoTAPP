@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../utils/network_util.dart';
-import '../utils/prefs_util.dart';
+import '../../utils/network_util.dart';
+import '../../utils/prefs_util.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

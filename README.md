@@ -6,7 +6,7 @@
 
 个人信息	info
 
-工时排行	rank
+工友圈	moment
 
 总看板		board
 

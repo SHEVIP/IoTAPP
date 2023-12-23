@@ -1,36 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/components/custom_row.dart';
-import 'package:untitled/components/custom_table_row.dart';
+import 'package:untitled/widgets/task_card.dart';
+import 'package:untitled/widgets/task_table_row.dart';
 import 'package:untitled/utils/network_util.dart';
 
-import '../model/task.dart';
+import '../../model/task.dart';
 
-class PageViewSwiperText extends StatefulWidget {
-  const PageViewSwiperText({super.key});
+class OrderList extends StatefulWidget {
+  const OrderList({super.key});
 
   @override
-  State<PageViewSwiperText> createState() => _PageViewSwiperState();
+  State<OrderList> createState() => _OrderListState();
 }
 
-class _PageViewSwiperState extends State<PageViewSwiperText> {
-  List<Widget> list = [];
-  List<TableRow> child = [];
-  List<Task> task_list = [];
+class _OrderListState extends State<OrderList> {
+  List<TaskCard> cards = [];
+  List<TableRow> tableRows = [];
+
+  // TODO: 这里的逻辑有点绕 因为每页展示3个Card 有多页。
   int _currentIndex = 0;
   final PageController _pageController = PageController(initialPage: 0);
 
   @override
   void initState() {
     super.initState();
-    fetchData();
-
-    // list 应该是itemList!.length个页面，每个页面 1<工单数<=4 显示文字
-    list = [];
+    tableRows.add(createCustomTableRow(
+        '任务名称', '加工车间', '开始日期', '截止日期', '计划工件数', '已加工工件数', '是否完成', '其他描述',
+        fontWeight: FontWeight.bold));
+    getTasks();
   }
 
-  fetchData() async {
-    List<Widget> updatedList = [];
-
+  getTasks() async {
+    // 请求接口
     var result = await NetworkUtil.getInstance().get("task/tasks?start=1");
     debugPrint('请求消息接口返回数据：${result?.data}');
 
@@ -38,23 +38,16 @@ class _PageViewSwiperState extends State<PageViewSwiperText> {
       List<dynamic> itemList = result?.data['data']['item'];
       List<List<String>> blockData = [];
 
-      List<TableRow> updatedChild = [];
-      updatedChild.add(
-        createCustomTableRow(
-            '任务名称', '加工车间', '开始日期', '截止日期', '计划工件数', '已加工工件数', '是否完成', '其他描述',
-            fontWeight: FontWeight.bold),
-      );
-
+      // 表格
       for (int i = 0; i < itemList.length; i++) {
         Task newTask = Task.fromJson(itemList[i]);
-        task_list.add(newTask);
 
         blockData.add([
           newTask.taskName,
           '任务工件数:${newTask.isFinished}',
           '已加工工件:${newTask.isFinished}'
         ]);
-        updatedChild.add(
+        tableRows.add(
           createCustomTableRow(
               newTask.taskName,
               newTask.workshopId.toString(),
@@ -66,19 +59,18 @@ class _PageViewSwiperState extends State<PageViewSwiperText> {
               newTask.description),
         );
       }
+
+      // 卡片列表
       int chunkSize = 3;
       for (int n = 0; n < blockData.length; n = n + chunkSize) {
-        int endindex = n + chunkSize;
-        if (endindex > blockData.length) endindex = blockData.length;
-        var tempData = blockData.sublist(n, endindex);
-        Widget newItem = CustomRow(blockData: tempData);
-        updatedList.add(newItem);
+        int endIndex = n + chunkSize;
+        if (endIndex > blockData.length) endIndex = blockData.length;
+        var tempData = blockData.sublist(n, endIndex);
+        TaskCard newItem = TaskCard(blockData: tempData);
+        cards.add(newItem);
       }
 
-      setState(() {
-        list = updatedList;
-        child = updatedChild;
-      });
+      setState(() {});
     } else {
       debugPrint("请求失败");
     }
@@ -88,8 +80,7 @@ class _PageViewSwiperState extends State<PageViewSwiperText> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text('工单列表'),
+        toolbarHeight: 0,
       ),
       body: Column(
         children: [
@@ -101,12 +92,12 @@ class _PageViewSwiperState extends State<PageViewSwiperText> {
                     controller: _pageController,
                     onPageChanged: (index) {
                       setState(() {
-                        _currentIndex = index % list.length;
+                        _currentIndex = index % cards.length;
                       });
                     },
-                    itemCount: list.length,
+                    itemCount: cards.length,
                     itemBuilder: (context, index) {
-                      if (list.length != 0) return list[index];
+                      if (cards.isNotEmpty) return cards[index];
                       return null;
                       // index的值是0-1000
                       // 0  1  2    0  1  2   0  1 2
@@ -120,24 +111,24 @@ class _PageViewSwiperState extends State<PageViewSwiperText> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.arrow_back),
+                        icon: const Icon(Icons.arrow_back),
                         color: Colors.white,
                         onPressed: _currentIndex > 0
                             ? () {
                                 _pageController.previousPage(
-                                  duration: Duration(milliseconds: 200),
+                                  duration: const Duration(milliseconds: 200),
                                   curve: Curves.easeInOut,
                                 );
                               }
                             : null,
                       ),
                       IconButton(
-                        icon: Icon(Icons.arrow_forward),
+                        icon: const Icon(Icons.arrow_forward),
                         color: Colors.white,
-                        onPressed: _currentIndex < list.length - 1
+                        onPressed: _currentIndex < cards.length - 1
                             ? () {
                                 _pageController.nextPage(
-                                  duration: Duration(milliseconds: 200),
+                                  duration: const Duration(milliseconds: 200),
                                   curve: Curves.easeInOut,
                                 );
                               }
@@ -147,32 +138,21 @@ class _PageViewSwiperState extends State<PageViewSwiperText> {
                   )),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '任务清单',
-                style: TextStyle(
-                  fontSize: 20, // 设置字体大小为18
-                ),
-              ),
-            ],
-          ),
+          const Center(child: Text('任务清单', style: TextStyle(fontSize: 20))),
           Expanded(
             child: Container(
               width: double.infinity,
               height: 600,
               color: Colors.white,
               child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(minWidth: 500), // 设置最小宽度
+                    constraints: const BoxConstraints(minWidth: 500), // 设置最小宽度
                     child: Table(
-                        defaultColumnWidth: FixedColumnWidth(100), // 设置列宽
+                        defaultColumnWidth: const FixedColumnWidth(100), // 设置列宽
                         border: TableBorder.all(),
-                        children: child),
+                        children: tableRows),
                   ),
                 ),
               ),
