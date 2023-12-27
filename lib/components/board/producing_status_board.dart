@@ -83,16 +83,29 @@ class _ProducingStatusBoardState extends State<ProducingStatusBoard> {
 
   List<DropdownMenuItem> getProcedureItemList() {
     List<DropdownMenuItem> list = [];
-    procedures.forEach(
-        (id, name) => list.add(DropdownMenuItem(value: id, child: Text(name))));
+    procedures.forEach((id, name) =>
+        list.add(DropdownMenuItem(value: id, child: Text('${id}_$name'))));
     return list;
+  }
+
+  Color getContainerColor(int machineStatus) {
+    const colors = [
+      Colors.white,
+      Colors.red,
+      Colors.amber,
+      Colors.yellow,
+      Colors.green,
+      Colors.blue,
+      Colors.purple
+    ];
+    return colors[machineStatus];
   }
 
   Container _buildCard(WorkshopStatusVO workshopStatusVO) => Container(
         alignment: Alignment.center,
         width: 10,
         height: 3000,
-        color: Colors.purple[50],
+        color: Colors.black12,
         child: Column(
           children: <Widget>[
             Text(workshopStatusVO.machineName),
@@ -101,13 +114,16 @@ class _ProducingStatusBoardState extends State<ProducingStatusBoard> {
                 width: 100,
                 height: 100,
                 alignment: Alignment.center,
+                color: getContainerColor(workshopStatusVO.machineStatus),
                 child: Text(
                   '${(workshopStatusVO.percent * 100).toStringAsFixed(2)}%',
                   style: const TextStyle(color: Colors.black),
                 ),
               ),
             ),
-            Text(MachineStatusType.getTypeFormIndex(workshopStatusVO.machineStatus).name)
+            Text(MachineStatusType.getTypeFormIndex(
+                    workshopStatusVO.machineStatus)
+                .name)
           ],
         ),
       );
