@@ -32,7 +32,7 @@ class _OrderListState extends State<OrderList> {
   getTasks() async {
     // 请求接口
     var result = await NetworkUtil.getInstance().get("task/tasks?start=1");
-    debugPrint('请求消息接口返回数据：${result?.data}');
+    // debugPrint('请求消息接口返回数据：${result?.data}');
 
     if (result?.data['status'] == 200) {
       List<dynamic> itemList = result?.data['data']['item'];
