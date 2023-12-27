@@ -23,16 +23,19 @@ class _OrderListState extends State<OrderList> {
   @override
   void initState() {
     super.initState();
-    tableRows.add(createCustomTableRow(
-        '任务名称', '加工车间', '开始日期', '截止日期', '计划工件数', '已加工工件数', '是否完成', '其他描述',
+    tableRows.add(createCustomTable4Row(
+        '任务名称', '加工车间', '开始日期', '截止日期',
         fontWeight: FontWeight.bold));
+    // tableRows.add(createCustomTableRow(
+    //     '任务名称', '加工车间', '开始日期', '截止日期', '计划工件数', '已加工工件数', '是否完成', '其他描述',
+    //     fontWeight: FontWeight.bold));
     getTasks();
   }
 
   getTasks() async {
     // 请求接口
     var result = await NetworkUtil.getInstance().get("task/tasks?start=1");
-    debugPrint('请求消息接口返回数据：${result?.data}');
+    // debugPrint('请求消息接口返回数据：${result?.data}');
 
     if (result?.data['status'] == 200) {
       List<dynamic> itemList = result?.data['data']['item'];
@@ -48,15 +51,16 @@ class _OrderListState extends State<OrderList> {
           '已加工工件:${newTask.isFinished}'
         ]);
         tableRows.add(
-          createCustomTableRow(
+          createCustomTable4Row(
               newTask.taskName,
               newTask.workshopId.toString(),
               newTask.startDate.replaceAll("T", "T\n"),
               newTask.effectiveTime.replaceAll("T", "T\n"),
-              ' ',
-              ' ',
-              newTask.isFinished.toString(),
-              newTask.description),
+              // ' ',
+              // ' ',
+              // newTask.isFinished.toString(),
+              // newTask.description),
+          ),
         );
       }
 

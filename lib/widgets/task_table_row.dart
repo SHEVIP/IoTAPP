@@ -107,3 +107,58 @@ TableRow createCustomTableRow(
     ],
   );
 }
+
+TableRow createCustomTable4Row(
+    String header1,
+    String header2,
+    String header3,
+    String header4,
+    {
+      FontWeight fontWeight = FontWeight.normal,
+    }) {
+  return TableRow(
+    children: [
+      TableCell(
+        child: Center(
+          child: Text(
+            header1,
+            style: TextStyle(
+              fontWeight: fontWeight,
+            ),
+          ),
+        ),
+      ),
+      TableCell(
+        child: Center(
+          child: Text(
+            header2,
+            style: TextStyle(
+              fontWeight: fontWeight,
+            ),
+          ),
+        ),
+      ),
+      TableCell(
+        child: Center(
+          child: Text(
+            header3,
+            style: TextStyle(
+              fontWeight: fontWeight,
+            ),
+          ),
+        ),
+      ),
+      TableCell(
+        child: Center(
+          child: Text(
+            header4,
+            style: TextStyle(
+              fontWeight: fontWeight,
+            ),
+          ),
+        ),
+      ),
+
+    ],
+  );
+}
