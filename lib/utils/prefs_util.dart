@@ -17,6 +17,7 @@ class CommonPreferences {
   static final workername = PrefsBean<String>('workername');  // 用户令牌
   static final userid = PrefsBean<int>('userid');  // userid
   static final workerid = PrefsBean<int>('workerid');  // userid
+  static final workertype = PrefsBean<String>('workertype');  // userid
 
   // 初始化
   static Future<void> init() async {

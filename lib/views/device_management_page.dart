@@ -31,9 +31,13 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
       "start": 1,
       "limit": 10,
     };
+    Map<String, dynamic> exception_params = {
+      "start": 1,
+      "limit": 10,
+    };
 
     try {
-      var exceptionResult = await NetworkUtil.getInstance().get("machineStatus/machineStatuss");
+      var exceptionResult = await NetworkUtil.getInstance().get("machineStatus/machineStatuss",params: exception_params);
       if (exceptionResult != null && exceptionResult.data['status'] == 200) {
         List<dynamic> items = exceptionResult.data['data']['item'];
         for (var item in items) {

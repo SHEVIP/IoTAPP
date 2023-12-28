@@ -22,6 +22,7 @@ class _LoginPageState extends State<LoginPage> {
     CommonPreferences.workername.value = "徐志强";
     CommonPreferences.userid.value = 1;
     CommonPreferences.workerid.value = 1;
+     CommonPreferences.workertype.value = "worker1";
 
     // 弹出提醒
     const snackBar = SnackBar(

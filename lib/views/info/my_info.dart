@@ -11,6 +11,7 @@ class MyInfoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final String name = CommonPreferences.workername.value;
     final int workerid = CommonPreferences.workerid.value ; // 如果没有值，则返回 'N/A'
+    final String workertype = CommonPreferences.workertype.value;
     return Scaffold(
       appBar: AppBar(
         title: const Text('个人信息'),
@@ -49,7 +50,7 @@ class MyInfoPage extends StatelessWidget {
                             children: [
                               Text('工号: $workerid'),
                               SizedBox(width: 10.0),
-                              Text('高级车工'),
+                              Text('工种：$workertype'),
                             ],
                           ),
                         ],
@@ -74,7 +75,7 @@ class MyInfoPage extends StatelessWidget {
                         style: TextStyle(fontSize: 22), // 调整字体大小
                       ),
                       Text(
-                        '6小时',
+                        '0小时',
                         style: TextStyle(fontSize: 14), // 调整字体大小
                       ),
                     ],
@@ -96,7 +97,7 @@ class MyInfoPage extends StatelessWidget {
                           style: TextStyle(fontSize: 22),
                         ),
                         Text(
-                          '80小时',
+                          '82小时',
                           style: TextStyle(fontSize: 14),
                         ),
                       ],
