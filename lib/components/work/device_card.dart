@@ -5,7 +5,7 @@ class DeviceCard extends StatelessWidget {
   final int deviceId;
   final VoidCallback onTap;
 
-  const DeviceCard({super.key, required this.deviceName, required this.deviceId,required this.onTap});
+  const DeviceCard({super.key, required this.deviceName, required this.deviceId,  required this.onTap});
 
   @override
   Widget build(BuildContext context) {

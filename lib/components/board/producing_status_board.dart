@@ -91,12 +91,17 @@ class _ProducingStatusBoardState extends State<ProducingStatusBoard> {
   Color getContainerColor(int machineStatus) {
     const colors = [
       Colors.white,
-      Colors.red,
-      Colors.amber,
-      Colors.yellow,
       Colors.green,
-      Colors.blue,
-      Colors.purple
+      Colors.amber,
+      Colors.grey,
+       Colors.red,
+       Colors.red,
+       Colors.red,
+       Colors.red,
+       Colors.red,
+       Colors.red,
+       Colors.red,
+
     ];
     return colors[machineStatus];
   }

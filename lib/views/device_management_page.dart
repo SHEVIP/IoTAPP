@@ -53,7 +53,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
           for (var machineWorker in machineWorkers) {
             int machineId = machineWorker['machine_id'];
             // 创建设备对象并添加到设备列表
-            Device device = Device(id: machineId);
+            Device device = Device(id: machineId,);
             _devices.add(device);
 
             // 发送请求获取设备名称
@@ -77,7 +77,9 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
     var response = await NetworkUtil.getInstance().get('machine/${device.id}');
     if (response != null && response.data['status'] == 200) {
       String deviceName = response.data['data']['machine_name']; // 根据实际返回的数据结构进行调整
+      int workshopId = response.data['data']['workshop_id']; // 根据实际返回的数据结构进行调整
       device.updateName(deviceName);
+      device.updateworkshopId(workshopId);
     }
   } catch (e) {
     debugPrint("获取设备名称出错: $e");
@@ -139,7 +141,7 @@ void reportException(BuildContext context, Device device) {
                     final exception = _deviceExceptions[index];
                     return ElevatedButton(
                       onPressed: () async {
-                        await reportDeviceException(device.id, exception.id);
+                        await reportDeviceException(device, exception.id);
                         Navigator.pop(context);
                       },
                       child: Text(exception.name),
@@ -160,22 +162,29 @@ String formatTimestamp(DateTime dateTime) {
   return formatter.format(dateTime);
 }
 
-Future<void> reportDeviceException(int deviceId, int exceptionId) async {
+Future<void> reportDeviceException(Device device, int exceptionId) async {
   String timestamp = formatTimestamp(DateTime.now());
-
+  int deviceId = device.id;
+  int workshopId = device.workshopId;
   Map<String, dynamic> params = {
     "machine_id": deviceId,
     "machine_status_id": exceptionId,
     "time": timestamp, // ISO 8601 格式的时间戳
   };
+  Map<String, dynamic> deviceParams = {
+    "workshop_id": workshopId,
+    "machine_status_id": exceptionId,
+  };
 
   try {
+    var deviceResult = await NetworkUtil.getInstance().put("machine/$deviceId", params: deviceParams);
+
     var result = await NetworkUtil.getInstance().post("machineLog", params: params);
     params.remove("time");
     var response = await NetworkUtil.getInstance().post('machineAnomaly',params: params);
 
     // 根据 response 处理结果
-    if (response?.data['status'] == 200 && result?.data['status']==200) {
+    if (response?.data['status'] == 200 && result?.data['status']==200  && deviceResult?.data['status']==200) {
       // 弹出提醒
       const snackBar = SnackBar(
         content: Text('异常上报成功!'),

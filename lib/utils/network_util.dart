@@ -67,6 +67,11 @@ class NetworkUtil {
       return await _dio.put(
         api,
         queryParameters: params,
+        options: Options(
+        validateStatus: (status) {
+          return true; // 服务器错误（状态码>=500）时抛出异常
+        },
+      ),
       );
     } on Exception catch (e) {
       debugPrint("PUT方法出错:${e.toString()}");
