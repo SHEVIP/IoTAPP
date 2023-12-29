@@ -26,7 +26,7 @@ class _WorkHoursDetailsPageState extends State<WorkHoursDetailsPage> {
 
   fetchWorkHours(int workerId) async {
     var result = await NetworkUtil.getInstance().get(
-        "workerAttendance/workerAttendances?start=1&limit=10&worker_id=$workerId&date=---')");
+        "workerAttendance/workerAttendances?start=1&limit=1000&worker_id=$workerId&date=---')");
     debugPrint('接口数据：${result?.data}');
 
     if (result?.data['status'] == 200) {

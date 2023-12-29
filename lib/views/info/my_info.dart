@@ -3,10 +3,38 @@ import 'package:untitled/components/info/message_scroll.dart';
 import 'package:untitled/utils/prefs_util.dart';
 import 'package:untitled/views/info/my_info_detail_page.dart';
 import 'work_hours_details_page.dart';
+import 'package:untitled/utils/prefs_util.dart';
+import 'package:untitled/utils/network_util.dart';
+import '../../model/work_hours.dart';
 
-class MyInfoPage extends StatelessWidget {
-  const MyInfoPage({super.key});
- 
+class MyInfoPage extends StatefulWidget {
+  const MyInfoPage({Key? key}) : super(key: key);
+
+  @override
+  State<MyInfoPage> createState() => _MyInfoPageState();
+}
+
+class _MyInfoPageState extends State<MyInfoPage> {
+  double todayWorkHours = 0.0;
+  double monthlyWorkHours = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchWorkHours();
+  }
+
+  fetchWorkHours() async {
+    int workerId = CommonPreferences.workerid.value;
+    // 两个方法来获取今日和当月的工时
+    var todayHours = await getTodayWorkHours(workerId);
+    var monthHours = await getMonthlyWorkHours(workerId);
+    setState(() {
+      todayWorkHours = todayHours;
+      monthlyWorkHours = monthHours;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final String name = CommonPreferences.workername.value;
@@ -50,7 +78,7 @@ class MyInfoPage extends StatelessWidget {
                             children: [
                               Text('工号: $workerid'),
                               SizedBox(width: 10.0),
-                              Text('工种：$workertype'),
+                              Text('工种: $workertype'),
                             ],
                           ),
                         ],
@@ -67,15 +95,15 @@ class MyInfoPage extends StatelessWidget {
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Expanded(
+                Expanded(
                   child: Column(
                     children: [
-                      Text(
+                      const Text(
                         '今日工时',
                         style: TextStyle(fontSize: 22), // 调整字体大小
                       ),
                       Text(
-                        '0小时',
+                        '${todayWorkHours.toStringAsFixed(1)}小时',
                         style: TextStyle(fontSize: 14), // 调整字体大小
                       ),
                     ],
@@ -90,14 +118,14 @@ class MyInfoPage extends StatelessWidget {
                             builder: (context) => const WorkHoursDetailsPage()),
                       );
                     },
-                    child: const Column(
+                    child:  Column(
                       children: [
-                        Text(
+                        const Text(
                           '本月累计工时',
                           style: TextStyle(fontSize: 22),
                         ),
                         Text(
-                          '82小时',
+                          '${monthlyWorkHours.toStringAsFixed(1)}小时',
                           style: TextStyle(fontSize: 14),
                         ),
                       ],
@@ -131,5 +159,50 @@ class MyInfoPage extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+Future<double> getTodayWorkHours(int workerId) async {
+  DateTime today = DateTime.now();
+  String formattedDate = "${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+
+  var result = await NetworkUtil.getInstance().get(
+      "workerAttendance/workerAttendances?start=1&limit=10&worker_id=$workerId&date=$formattedDate");
+  debugPrint('今日工时数据：${result?.data}');
+
+  if (result?.data['status'] == 200) {
+    var items = result?.data['data']['item'];
+    double todayHours = 0.0;
+    for (var item in items) {
+      var workHours = WorkHours.fromJson(item).getWorkHours();
+      todayHours += workHours;
+    }
+    return todayHours;
+  } else {
+    debugPrint('获取今日工时失败: ${result?.data}');
+    return 0.0;
+  }
+}
+
+Future<double> getMonthlyWorkHours(int workerId) async {
+  DateTime now = DateTime.now();
+  DateTime firstDayOfMonth = DateTime(now.year, now.month, 1);
+  String formattedStartDate = "${firstDayOfMonth.year}-${firstDayOfMonth.month.toString().padLeft(2, '0')}";
+
+  var result = await NetworkUtil.getInstance().get(
+      "workerAttendance/workerAttendances?start=1&limit=31&worker_id=$workerId&date=$formattedStartDate");
+  debugPrint('当月工时数据：${result?.data}');
+
+  if (result?.data['status'] == 200) {
+    var items = result?.data['data']['item'];
+    double monthlyHours = 0.0;
+    for (var item in items) {
+      var workHours = WorkHours.fromJson(item).getWorkHours();
+      monthlyHours += workHours;
+    }
+    return monthlyHours;
+  } else {
+    debugPrint('获取当月工时失败: ${result?.data}');
+    return 0.0;
   }
 }
