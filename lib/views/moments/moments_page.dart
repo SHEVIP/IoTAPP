@@ -25,23 +25,43 @@ class _MomentsPageState extends State<MomentsPage>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     dayRanks = [
-      WorkHoursData('张三', 8.5),
-      WorkHoursData('李四', 7.8),
-      WorkHoursData('李六', 5.8),
-      WorkHoursData('李六', 5.8),
-      WorkHoursData('李六', 5.8),
-      WorkHoursData('李六', 5.8),
-      WorkHoursData('李六', 5.8),
+      WorkHoursData('孙建国', 8.5),
+      WorkHoursData('朴维', 7.8),
+      WorkHoursData('赵小泽', 6.8),
+      WorkHoursData('张伟', 6.5),
+      WorkHoursData('王小帆', 6.2),
+      WorkHoursData('郑小红', 6.2),
+      WorkHoursData('陈静', 6.0),
+      WorkHoursData('徐志强', 5.8),
+      WorkHoursData('杨涛', 5.4),
+      WorkHoursData('Alan', 5.3),
     ];
 
     monthRanks = [
-      WorkHoursData('王五', 160),
-      WorkHoursData('赵六', 150),
+      WorkHoursData('赵小泽', 255),
+      WorkHoursData('张伟', 254),
+      WorkHoursData('王小帆', 251),
+      WorkHoursData('郑小红', 240),
+      WorkHoursData('孙建国', 239),
+      WorkHoursData('朴维', 220),
+      WorkHoursData('陈静', 219),
+      WorkHoursData('徐志强', 210),
+      WorkHoursData('杨涛', 201),
+      WorkHoursData('Alan', 200),
     ];
 
     yearRanks = [
-      WorkHoursData('钱七', 1900),
-      WorkHoursData('孙八', 1800),
+      WorkHoursData('陈静', 2200),
+      WorkHoursData('徐志强', 2178),
+      WorkHoursData('杨涛', 2133),
+      WorkHoursData('Alan', 2103),
+      WorkHoursData('孙建国', 2101),
+      WorkHoursData('朴维', 2099),
+      WorkHoursData('赵小泽', 2012),
+      WorkHoursData('张伟', 2000),
+      WorkHoursData('王小帆', 1999),
+      WorkHoursData('郑小红', 1986),
+
     ];
   }
 

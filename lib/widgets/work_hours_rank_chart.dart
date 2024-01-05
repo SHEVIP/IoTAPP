@@ -36,7 +36,7 @@ class WorkHoursRankChart extends StatelessWidget {
             ));
 
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(34),
       child: RotatedBox(
         // 柱状图水平显示
         quarterTurns: 1,
@@ -57,7 +57,7 @@ class WorkHoursRankChart extends StatelessWidget {
                 getTextStyles: (context, value) => const TextStyle(
                   color: Colors.blue,
                   fontWeight: FontWeight.bold,
-                  fontSize: 14,
+                  fontSize: 16,
                 ),
                 margin: 16,
                 getTitles: (double value) =>
