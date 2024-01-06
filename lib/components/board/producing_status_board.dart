@@ -17,7 +17,7 @@ class _ProducingStatusBoardState extends State<ProducingStatusBoard> {
   List<Workshop> workshops = [];
   List<WorkshopStatusVO> workshopStatus = [];
   List<WorkshopStatusVO> procedureStatus = [];
-  Map<num, String> procedures = {};
+  Set<num> procedures = {};
 
   init() async {
     // 获取所有的车间
@@ -67,24 +67,25 @@ class _ProducingStatusBoardState extends State<ProducingStatusBoard> {
 
       for (int i = 0; i < list.length; i++) {
         workshopStatus.add(WorkshopStatusVO.fromJson(list[i]));
-        procedures[list[i]['procrdure_id']] = list[i]['procrdure_name'];
+        procedures.add(list[i]['task_id']);
       }
     }
-    getProcedureStates(workshopStatus[0].procedureId);
+    getProcedureStates(workshopStatus[0].taskId);
     setState(() {});
   }
 
   getProcedureStates(int procedureId) {
     procedureStatus = workshopStatus
-        .where((element) => element.procedureId == procedureId)
+        .where((element) => element.taskId == procedureId)
         .toList();
     setState(() {});
   }
 
   List<DropdownMenuItem> getProcedureItemList() {
     List<DropdownMenuItem> list = [];
-    procedures.forEach((id, name) =>
-        list.add(DropdownMenuItem(value: id, child: Text('${id}_$name'))));
+    for (var id in procedures) {
+      list.add(DropdownMenuItem(value: id, child: Text('产线$id')));
+    }
     return list;
   }
 
@@ -94,44 +95,50 @@ class _ProducingStatusBoardState extends State<ProducingStatusBoard> {
       Colors.green,
       Colors.amber,
       Colors.grey,
-       Colors.red,
-       Colors.red,
-       Colors.red,
-       Colors.red,
-       Colors.red,
-       Colors.red,
-       Colors.red,
-
+      Colors.red,
+      Colors.red,
+      Colors.red,
+      Colors.red,
+      Colors.red,
+      Colors.red,
+      Colors.red,
+      Colors.red,
+      Colors.red,
+      Colors.red,
+      Colors.red,
+      Colors.red,
+      Colors.red,
+      Colors.red,
     ];
     return colors[machineStatus];
   }
 
   Container _buildCard(WorkshopStatusVO workshopStatusVO) => Container(
-        alignment: Alignment.center,
-        width: 10,
-        height: 3000,
-        color: Colors.black12,
-        child: Column(
-          children: <Widget>[
-            Text(workshopStatusVO.machineName),
-            Card(
-              child: Container(
-                width: 100,
-                height: 100,
-                alignment: Alignment.center,
-                color: getContainerColor(workshopStatusVO.machineStatus),
-                child: Text(
-                  '${(workshopStatusVO.percent * 100).toStringAsFixed(2)}%',
-                  style: const TextStyle(color: Colors.black),
-                ),
-              ),
+    alignment: Alignment.center,
+    width: 10,
+    height: 3000,
+    color: Colors.black12,
+    child: Column(
+      children: <Widget>[
+        Text(workshopStatusVO.machineName),
+        Card(
+          child: Container(
+            width: 100,
+            height: 100,
+            alignment: Alignment.center,
+            color: getContainerColor(workshopStatusVO.machineStatus),
+            child: Text(
+              '${(workshopStatusVO.percent * 100).toStringAsFixed(2)}%',
+              style: const TextStyle(color: Colors.black),
             ),
-            Text(MachineStatusType.getTypeFormIndex(
-                    workshopStatusVO.machineStatus)
-                .name)
-          ],
+          ),
         ),
-      );
+        Text(MachineStatusType.getTypeFormIndex(
+            workshopStatusVO.machineStatus)
+            .name)
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -144,9 +151,9 @@ class _ProducingStatusBoardState extends State<ProducingStatusBoard> {
                 value: currentWorkshopId,
                 items: workshops
                     .map((item) => DropdownMenuItem(
-                          value: item.id,
-                          child: Text(item.workshopName),
-                        ))
+                  value: item.id,
+                  child: Text(item.workshopName),
+                ))
                     .toList(),
                 onChanged: (value) {
                   currentWorkshopId = value!;
@@ -170,7 +177,7 @@ class _ProducingStatusBoardState extends State<ProducingStatusBoard> {
               crossAxisSpacing: 20,
               childAspectRatio: 1 / 1.3,
               children:
-                  procedureStatus.map((item) => _buildCard(item)).toList(),
+              procedureStatus.map((item) => _buildCard(item)).toList(),
             ))
       ],
     );

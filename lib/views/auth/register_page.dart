@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/network_util.dart';
+import '../../utils/network_util1.dart';
 import '../../utils/prefs_util.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -15,7 +16,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _repeatPasswordController =
-      TextEditingController();
+  TextEditingController();
 
   @override
   void initState() {
@@ -50,15 +51,15 @@ class _RegisterPageState extends State<RegisterPage> {
     // params["password"] = _passwordController.text;
 
     var result =
-        await NetworkUtil.getInstance().post("user/register", params: params);
-    if (result?.data['status'] == 10001) {
+    await NetworkUtil1.getInstance().post("user/register", params: params);
+    if (result?.data['status'] == 10002) {
       // 弹出提醒
       const snackBar = SnackBar(
         content: Text('用户名已存在！'),
         duration: Duration(seconds: 1),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } 
+    }
     else if(result?.data['status'] == 40001) {
       // 弹出提醒
       const snackBar = SnackBar(
@@ -71,7 +72,7 @@ class _RegisterPageState extends State<RegisterPage> {
       CommonPreferences.isLogin.value = true;
       CommonPreferences.phone.value = _phoneController.text;
       CommonPreferences.password.value = _passwordController.text;
-      CommonPreferences.userid.value = result?.data['data']['user_id'];
+      // CommonPreferences.userid.value = result?.data['data']['user_id'];
 
       // 弹出提醒
       const snackBar = SnackBar(

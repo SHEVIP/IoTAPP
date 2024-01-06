@@ -158,6 +158,10 @@ class _MyInfoPageState extends State<MyInfoPage> {
               ),
             ),
             const MessageScroll(),
+            ElevatedButton(
+              child: const Text('退出登录'),
+              onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+            ),
             // 如果需要在列表底部增加灰色背景，可以添加额外的空白Container
             // Container(
             //   height: MediaQuery.of(context).size.height,
