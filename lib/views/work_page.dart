@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/views/device_management_page.dart';
+import 'package:untitled/views/security_management.dart';
 
 class WorkPage extends StatefulWidget {
   const WorkPage({super.key});
@@ -22,14 +23,14 @@ class _WorkPageState extends State<WorkPage> {
             toolbarHeight: 0,
             bottom: const TabBar(tabs: [
               Tab(text: "设备管理"),
-              Tab(text: ""),
+              Tab(text: "安全管理"),
               Tab(text: ""),
             ]),
           ),
           body: const TabBarView(
             children: [
               DeviceManagementPage(),
-              Icon(Icons.directions_bike),
+              SecurityManagementPage(),
               Icon(Icons.directions_bike),
             ],
           ),
