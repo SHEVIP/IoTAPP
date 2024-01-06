@@ -1,169 +1,96 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:untitled/model/order.dart';
+import 'package:untitled/model/procedure.dart';
+import 'package:untitled/utils/prefs_util.dart';
 import 'package:untitled/widgets/task_card.dart';
 import 'package:untitled/widgets/task_table_row.dart';
 import 'package:untitled/utils/network_util.dart';
 
 import '../../model/task.dart';
 
+
+
+
 class OrderList extends StatefulWidget {
-  const OrderList({super.key});
+  const OrderList({Key? key}) : super(key: key);
 
   @override
-  State<OrderList> createState() => _OrderListState();
+  _OrderListState createState() => _OrderListState();
 }
 
 class _OrderListState extends State<OrderList> {
-  List<TaskCard> cards = [];
-  List<TableRow> tableRows = [];
-
-  // TODO: 这里的逻辑有点绕 因为每页展示3个Card 有多页。
-  int _currentIndex = 0;
-  final PageController _pageController = PageController(initialPage: 0);
+  late Future<List<Order>> futureOrders;
 
   @override
   void initState() {
     super.initState();
-    tableRows.add(createCustomTable4Row(
-        '任务名称', '加工车间', '开始日期', '截止日期',
-        fontWeight: FontWeight.bold));
-    // tableRows.add(createCustomTableRow(
-    //     '任务名称', '加工车间', '开始日期', '截止日期', '计划工件数', '已加工工件数', '是否完成', '其他描述',
-    //     fontWeight: FontWeight.bold));
-    getTasks();
+    futureOrders = fetchOrders();
   }
 
-  getTasks() async {
-    // 请求接口
-    var result = await NetworkUtil.getInstance().get("task/tasks?start=1");
-    // debugPrint('请求消息接口返回数据：${result?.data}');
+  Future<List<Order>> fetchOrders() async {
+    Map<String, dynamic> params = {
+      "workshop_id": 1,
+      "start": 1,
+      "limit": 100,
+    };
+    var response = await NetworkUtil.getInstance().post("screen/order",params: params);
 
-    if (result?.data['status'] == 200) {
-      List<dynamic> itemList = result?.data['data']['item'];
-      List<List<String>> blockData = [];
+  if (response != null && response.data['status'] == 200) {
+    // 你需要检查 'Orders' 是否是response.data['data']['item']中的一个键
+    List<dynamic> ordersJson = response.data['data']['item']['Orders'];
+    
+    // 使用.map()函数将每个json对象转换为Order对象
+    List<Order> orders = ordersJson.map<Order>((json) => Order.fromJson(json)).toList();
+    
+    return orders; // 这里返回的是List<Order>，不需要额外包装为Future，因为这个函数已经是异步函数了。
+  } else {
+    throw Exception('Failed to load orders');
+  }
+  }
 
-      // 表格
-      for (int i = 0; i < itemList.length; i++) {
-        Task newTask = Task.fromJson(itemList[i]);
-
-        blockData.add([
-          newTask.taskName,
-          '任务工件数:${newTask.isFinished}',
-          '已加工工件:${newTask.isFinished}'
-        ]);
-        tableRows.add(
-          createCustomTable4Row(
-              newTask.taskName,
-              newTask.workshopId.toString(),
-              newTask.startDate.replaceAll("T", "T\n"),
-              newTask.effectiveTime.replaceAll("T", "T\n"),
-              // ' ',
-              // ' ',
-              // newTask.isFinished.toString(),
-              // newTask.description),
+ 
+  Widget _buildRow(Order order) {
+    return ExpansionTile(
+      title: Text(order.taskName),
+      subtitle: Text('${order.totalNum}计划工件数, ${order.finishNum}已加工'),
+      trailing: Text(order.isFinished == 1 ? '已完成' : '进行中'),
+      children: <Widget>[
+        ListTile(
+          title: Text('详细信息'),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('加工车间: ${order.workshopName}'),
+              Text('开始日期: ${order.startTime}'),
+              Text('截止日期: ${order.effectiveTime}'),
+              Text('描述: ${order.description}'),
+            ],
           ),
-        );
-      }
-
-      // 卡片列表
-      int chunkSize = 3;
-      for (int n = 0; n < blockData.length; n = n + chunkSize) {
-        int endIndex = n + chunkSize;
-        if (endIndex > blockData.length) endIndex = blockData.length;
-        var tempData = blockData.sublist(n, endIndex);
-        TaskCard newItem = TaskCard(blockData: tempData);
-        cards.add(newItem);
-      }
-
-      setState(() {});
-    } else {
-      debugPrint("请求失败");
-    }
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 0,
-      ),
-      body: Column(
-        children: [
-          Stack(
-            children: [
-              SizedBox(
-                height: 200,
-                child: PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentIndex = index % cards.length;
-                      });
-                    },
-                    itemCount: cards.length,
-                    itemBuilder: (context, index) {
-                      if (cards.isNotEmpty) return cards[index];
-                      return null;
-                      // index的值是0-1000
-                      // 0  1  2    0  1  2   0  1 2
-                    }),
-              ),
-              Positioned(
-                  left: 0,
-                  right: 0, //设置 left:0 right:0就会站满整行
-                  bottom: 2,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back),
-                        color: Colors.white,
-                        onPressed: _currentIndex > 0
-                            ? () {
-                                _pageController.previousPage(
-                                  duration: const Duration(milliseconds: 200),
-                                  curve: Curves.easeInOut,
-                                );
-                              }
-                            : null,
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.arrow_forward),
-                        color: Colors.white,
-                        onPressed: _currentIndex < cards.length - 1
-                            ? () {
-                                _pageController.nextPage(
-                                  duration: const Duration(milliseconds: 200),
-                                  curve: Curves.easeInOut,
-                                );
-                              }
-                            : null,
-                      ),
-                    ],
-                  )),
-            ],
-          ),
-          const Center(child: Text('任务清单', style: TextStyle(fontSize: 20))),
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              height: 600,
-              color: Colors.white,
-              child: SingleChildScrollView(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 500), // 设置最小宽度
-                    child: Table(
-                        defaultColumnWidth: const FixedColumnWidth(100), // 设置列宽
-                        border: TableBorder.all(),
-                        children: tableRows),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return FutureBuilder<List<Order>>(
+      future: futureOrders,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (snapshot.hasData) {
+          List<Order> orders = snapshot.data!;
+          return ListView(
+            children: orders.map(_buildRow).toList(),
+          );
+        } else {
+          return Center(child: Text('No orders found'));
+        }
+      },
     );
   }
 }

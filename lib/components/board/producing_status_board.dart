@@ -17,7 +17,7 @@ class _ProducingStatusBoardState extends State<ProducingStatusBoard> {
   List<Workshop> workshops = [];
   List<WorkshopStatusVO> workshopStatus = [];
   List<WorkshopStatusVO> procedureStatus = [];
-  Set<num> procedures = {};
+  Set<int> procedures = {};
 
   init() async {
     // 获取所有的车间
@@ -81,13 +81,32 @@ class _ProducingStatusBoardState extends State<ProducingStatusBoard> {
     setState(() {});
   }
 
-  List<DropdownMenuItem> getProcedureItemList() {
-    List<DropdownMenuItem> list = [];
+  List<DropdownMenuItem<int>> getProcedureItemList() {
+    List<DropdownMenuItem<int>> list = [];
     for (var id in procedures) {
-      list.add(DropdownMenuItem(value: id, child: Text('产线$id')));
+      list.add(DropdownMenuItem<int>(value: id, child: Text('产线$id')));
     }
     return list;
   }
+String _formatDateString(String dateString) {
+  // 从字符串末尾移除 ' +0000 UTC'
+  String isoDateStr = dateString.replaceAll(' +0000 UTC', '');
+  // 日期和时间之间加入'T'
+  isoDateStr = isoDateStr.replaceAll(' ', 'T');
+  // 添加'Z'表示UTC时间
+  isoDateStr += 'Z';
+  return isoDateStr;
+}
+
+String _getDuration(String endTime) {
+  String formattedEndTime = _formatDateString(endTime);
+  DateTime end = DateTime.parse(formattedEndTime);
+  Duration duration = DateTime.now().toUtc().difference(end);
+  int totalMinutes = duration.inMinutes;
+  int hours = totalMinutes ~/ 60; // 使用地板除法来获取完整小时数
+  int minutes = totalMinutes % 60; // 获取剩余分钟数
+  return '${hours}小时${minutes}分钟';
+}
 
   Color getContainerColor(int machineStatus) {
     const colors = [
@@ -113,72 +132,244 @@ class _ProducingStatusBoardState extends State<ProducingStatusBoard> {
     return colors[machineStatus];
   }
 
-  Container _buildCard(WorkshopStatusVO workshopStatusVO) => Container(
-    alignment: Alignment.center,
-    width: 10,
-    height: 3000,
+ Container _buildCard(WorkshopStatusVO workshopStatusVO) => Container(
+  margin: const EdgeInsets.all(8.0), // 添加边距
+  alignment: Alignment.center,
+  decoration: BoxDecoration(
     color: Colors.black12,
-    child: Column(
-      children: <Widget>[
-        Text(workshopStatusVO.machineName),
-        Card(
-          child: Container(
-            width: 100,
-            height: 100,
-            alignment: Alignment.center,
-            color: getContainerColor(workshopStatusVO.machineStatus),
-            child: Text(
-              '${(workshopStatusVO.percent * 100).toStringAsFixed(2)}%',
-              style: const TextStyle(color: Colors.black),
+    borderRadius: BorderRadius.circular(8.0), // 圆角
+    boxShadow: [
+      BoxShadow(
+        color: Colors.grey.withOpacity(0.5),
+        spreadRadius: 1,
+        blurRadius: 6,
+        offset: Offset(0, 3), // 阴影位置
+      ),
+    ],
+  ),
+  child: SingleChildScrollView( // 避免溢出
+    child: ConstrainedBox( // 限制最小高度
+      constraints: BoxConstraints(
+        minHeight: 140.0, // 最小高度，可以根据需要调整
+      ),
+      child: IntrinsicHeight( // 调整高度以适应内容
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center, // 居中内容
+          children: <Widget>[
+            Text(workshopStatusVO.machineName),
+            SizedBox(height: 4.0), // 添加一些间距
+            Card(
+              elevation: 2.0, // 卡片阴影
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0), // 卡片圆角
+              ),
+              child: Container(
+                width: 100,
+                height: 100,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: getContainerColor(workshopStatusVO.machineStatus),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Text(
+                  '${(workshopStatusVO.percent * 100).toStringAsFixed(2)}%',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+            Text(MachineStatusType.getTypeFormIndex(workshopStatusVO.machineStatus).name)
+          ],
+        ),
+      ),
+    ),
+  ),
+);
+  
+  
+  
+// 根据状态码获取对应的颜色
+Color _getStatusColor(int status) {
+  switch (status) {
+    case 1:
+      return Colors.green;
+    case 2:
+      return Colors.orange;
+    case 3:
+      return Colors.grey;
+    case 4:
+      return Colors.amber;
+    // ... 根据实际的状态添加更多的case...
+    default:
+      return Colors.red;
+  }
+} 
+  // 构建每个设备的卡片
+// Widget _buildMachineCard(WorkshopStatusVO statusVO) {
+//   return Container(
+//     margin: const EdgeInsets.all(8),
+//     padding: const EdgeInsets.all(10),
+//     decoration: BoxDecoration(
+//       color: _getStatusColor(statusVO.machineStatus),
+//       borderRadius: BorderRadius.circular(8),
+//     ),
+//     child: Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: <Widget>[
+//         Text(statusVO.machineName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+//         SizedBox(height: 4),
+//         Text('负责人: ${statusVO.workerName}'),
+//         SizedBox(height: 4),
+//         Text('工序: ${statusVO.procedureName}'),
+//         SizedBox(height: 4),
+//         Text('状态时长: ${_getDuration(statusVO.time)}'),
+//         SizedBox(height: 4),
+//         LinearProgressIndicator(
+//           value: statusVO.percent.toDouble(),
+//           backgroundColor: Colors.white,
+//           valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+//         ),
+//         Text('${(statusVO.percent * 100).toStringAsFixed(2)}%'),
+//       ],
+//     ),
+//   );
+// }
+   // 构建设备卡片
+ Widget _buildMachineCard(WorkshopStatusVO statusVO) {
+  MachineStatus status = MachineStatusType.getTypeFormIndex(statusVO.machineStatus);
+
+  return Card(
+    color: _getStatusColor(statusVO.machineStatus),
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, // 修改为spaceBetween
+        children: <Widget>[
+          _buildCardRow(Icons.precision_manufacturing, statusVO.machineName, bold: true),
+          _buildCardRow(Icons.person, statusVO.workerName),
+          _buildCardRow(Icons.build_circle, 'Task${statusVO.taskId}'),
+          _buildCardRow(Icons.list, statusVO.procedureName),
+          _buildCardRow(Icons.info_outline, status.name),
+          _buildCardRow(Icons.timer, _getDuration(statusVO.time)),
+          Flexible( // 包裹在Flexible中，防止溢出
+            child: Stack(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: SizedBox(
+                    height: 30, // 可能需要调整高度
+                    child: LinearProgressIndicator(
+                      backgroundColor: Colors.black.withOpacity(0.5),
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white.withAlpha(240)),
+                      value: statusVO.percent.toDouble(),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    '${(statusVO.percent * 100).toStringAsFixed(2)}%',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        Text(MachineStatusType.getTypeFormIndex(
-            workshopStatusVO.machineStatus)
-            .name)
-      ],
+        ],
+      ),
     ),
   );
+}
 
+
+Widget _buildCardRow(IconData icon, String text, {bool bold = false}) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Icon(icon, color: Colors.white),
+      SizedBox(width: 5), // Add some space between the icon and the text
+      Expanded(
+        child: Text(
+          text,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    ],
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+        SizedBox(height: 10), // 在Row前面添加空白，20可以根据你的需要调整
         Row(
           children: [
-            const Text('选择车间：'),
-            DropdownButton(
+            Flexible(
+              child: DropdownButtonFormField<int>(
+                decoration: InputDecoration(
+                  labelText: '选择车间',
+                  contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0), // 减小垂直填充
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(6.0),
+                  ),
+                ),
                 value: currentWorkshopId,
-                items: workshops
-                    .map((item) => DropdownMenuItem(
-                  value: item.id,
-                  child: Text(item.workshopName),
-                ))
-                    .toList(),
-                onChanged: (value) {
-                  currentWorkshopId = value!;
-                  getStates(currentWorkshopId);
-                }),
-            const Text('选择产线：'),
-            DropdownButton(
+                items: workshops.map((item) {
+                  return DropdownMenuItem(
+                    value: item.id,
+                    child: Text(item.workshopName),
+                  );
+                }).toList(),
+                onChanged: (int? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      currentWorkshopId = newValue;
+                      getStates(currentWorkshopId);
+                    });
+                  }
+                },
+              ),
+            ),
+            SizedBox(width: 8.0),
+            Expanded(
+              child: DropdownButtonFormField<int>(
+                decoration: InputDecoration(
+                  labelText: '选择产线',
+                  contentPadding: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(6.0),
+                  ),
+                ),
                 value: currentProcedureId,
                 items: getProcedureItemList(),
-                onChanged: (value) {
-                  currentProcedureId = value!;
-                  getProcedureStates(currentProcedureId);
-                }),
+                onChanged: (int? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      currentProcedureId = newValue;
+                      getProcedureStates(currentProcedureId);
+                    });
+                  }
+                },
+              ),
+            ),
           ],
         ),
         Expanded(
-            flex: 6,
-            child: GridView.count(
+          flex: 5,
+          child: GridView.builder(
+            itemCount: procedureStatus.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 20,
-              childAspectRatio: 1 / 1.3,
-              children:
-              procedureStatus.map((item) => _buildCard(item)).toList(),
-            ))
+              childAspectRatio: 1 / 1.5,
+            ),
+            itemBuilder: (context, index) {
+              return _buildMachineCard(procedureStatus[index]);
+            },
+          ),
+        ),
       ],
     );
   }
