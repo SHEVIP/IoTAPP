@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/components/board/oee_board.dart';
-import 'package:untitled/components/board/producing_status_board.dart';
-import 'package:untitled/components/board/order_list.dart';
+import 'package:untitled/views/board/oee_board.dart';
+import 'package:untitled/views/board/producing_status_board.dart';
+import 'package:untitled/views/board/order_list.dart';
 
 class BoardPage extends StatefulWidget {
   const BoardPage({super.key});

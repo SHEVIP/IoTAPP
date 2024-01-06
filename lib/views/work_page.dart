@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/views/device_management_page.dart';
+import 'package:untitled/views/worktop/device_management_page.dart';
+import 'package:untitled/views/worktop/inventory_page.dart';
+import 'package:untitled/views/worktop/security_management.dart';
 
 class WorkPage extends StatefulWidget {
   const WorkPage({super.key});
@@ -22,15 +24,15 @@ class _WorkPageState extends State<WorkPage> {
             toolbarHeight: 0,
             bottom: const TabBar(tabs: [
               Tab(text: "设备管理"),
-              Tab(text: ""),
-              Tab(text: ""),
+              Tab(text: "安全管理"),
+              Tab(text: "库存管理"),
             ]),
           ),
-          body: const TabBarView(
+          body: TabBarView(
             children: [
               DeviceManagementPage(),
-              Icon(Icons.directions_bike),
-              Icon(Icons.directions_bike),
+              SecurityManagementPage(),
+              InventoryPage(),
             ],
           ),
         ),
