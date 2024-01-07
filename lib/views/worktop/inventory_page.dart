@@ -17,7 +17,7 @@ class _InventoryPageState extends State<InventoryPage> {
     super.initState();
     inventoryItems = fetchInventoryItems();
   }
-
+  
   Future<List<InventoryItem>> fetchInventoryItems() async {
     // 使用 NetworkUtil 进行 GET 请求
     var response = await NetworkUtil.getInstance().get("inventory/inventorys?start=1&limit=1000");
@@ -256,18 +256,23 @@ class InventoryCard extends StatelessWidget {
   Future<void> _submitInventoryChange(BuildContext context, int id, String itemType, int original, int newInventory) async {
     // TODO: Implement the API call to update the inventory
     // Example:
-    // var response = await NetworkUtil.getInstance().post('inventory/update', params: {
-    //   'id': item.id,
-    //   'newInventory': newInventory
-    // });
+    Map<String, dynamic> params = {
+      'iventory_num': newInventory
+    };
+    var response = await NetworkUtil.getInstance().put('inventory/${item.id}',params: params);
 
     // Check response and show success or error message
-    var a =2;
-    if (a==1) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('库存修改成功')));
+    if (response?.data['status'] == 200) {
+    // 显示SnackBar
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text('库存修改成功！')));
+
+    // 重新获取并刷新库存列表
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('库存修改失败')));
-    }
+      const snackBar = SnackBar(
+        content: Text('库存修改失败!'),
+        duration: Duration(seconds: 1),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);    }
   }
 
 }

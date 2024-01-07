@@ -21,11 +21,64 @@ class _SecurityManagementPageState extends State<SecurityManagementPage> {
   bool select3 = false;
   bool select4 = false;
   bool select5 = false;
-
   @override
   void initState() {
     super.initState();
     getWorkshops();
+  }
+// 显示提示弹窗的函数
+  void _showDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              child: Text('确定'),
+              onPressed: () {
+                Navigator.of(context).pop(); // 关闭弹窗
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  int getSelectedId() {
+    if (select1) return 1;
+    if (select2) return 2;
+    if (select3) return 3;
+    if (select4) return 4;
+    if (select5) return 5;
+    return 0; // 如果没有选中的，返回0或其他代表"none"的值
+  }
+  // 提交事故信息的函数
+  void submitAccidentReport() async {
+
+    var params = {
+      "workshop_id": currentWorkshopId.toString(),
+      "value": getSelectedId(),
+      "type": 1,
+      // 其他需要的参数
+    };
+
+    try {
+      // 发送HTTP请求
+      var response = await NetworkUtil.getInstance().post('safe', params: params);
+      // 检查是否发送成功
+      if (response?.data['status'] == 200) {
+        // 请求成功，显示成功的提示弹窗
+        _showDialog("成功", "事故报告已成功提交。");
+      } else {
+        // 请求失败，显示失败的提示弹窗
+        _showDialog("失败", "提交事故报告时发生错误，请稍后再试。");
+      }
+    } catch (e) {
+      // 发生异常，显示错误的提示弹窗
+      _showDialog("错误", "发送请求时发生异常：$e");
+    }
   }
 
   getWorkshops() async {
@@ -39,6 +92,7 @@ class _SecurityManagementPageState extends State<SecurityManagementPage> {
       }
     }
     currentWorkshopId = workshops[0].id;
+    setState(() {});
   }
 
   @override
@@ -232,7 +286,7 @@ class _SecurityManagementPageState extends State<SecurityManagementPage> {
                 shape: const RoundedRectangleBorder(),
                 side: const BorderSide(color: Colors.red),
               ),
-              onPressed: () {},
+              onPressed: submitAccidentReport, // 调用函数
               child: const Text(
                 "提交",
                 style: TextStyle(color: Colors.red),
