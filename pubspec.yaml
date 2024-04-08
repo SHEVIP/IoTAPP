@@ -19,6 +19,7 @@ dependencies:
   fl_chart: ^0.36.0
   table_calendar: ^3.0.9
   intl: ^0.18.0
+  network_info_plus: ^4.0.1
 
 # 开发依赖
 dev_dependencies:

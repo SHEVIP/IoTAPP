@@ -5,6 +5,7 @@ import 'package:untitled/views/info/my_info_detail_page.dart';
 import 'work_hours_details_page.dart';
 import 'package:untitled/utils/prefs_util.dart';
 import 'package:untitled/utils/network_util.dart';
+import 'package:untitled/views/info/wifi_connect.dart';
 import '../../model/work_hours.dart';
 
 class MyInfoPage extends StatefulWidget {
@@ -157,6 +158,28 @@ class _MyInfoPageState extends State<MyInfoPage> {
                 ),
               ),
             ),
+            Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const WifiConnectPage()),
+                  ),
+                  child: const Text('为网联设备配对WIFI', style: TextStyle(fontSize: 18),),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white, // 设置按钮背景颜色为淡蓝色
+                    onPrimary: Colors.lightBlue[500], // 设置文字颜色为白色
+                    elevation: 2, // 设置阴影
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8), // 设置按钮的圆角
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 15), // 设置内边距
+                  ),
+                ),
+              ),
+            ),
+
             const MessageScroll(),
             ElevatedButton(
               child: const Text('退出登录'),
