@@ -2,57 +2,57 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class WifiConnectPage extends StatefulWidget {
   const WifiConnectPage({Key? key}) : super(key: key);
 
   @override
-  _WifiConnectPageState createState() => _WifiConnectPageState();
+  State<WifiConnectPage> createState() => _WifiConnectPageState();
 }
 
 class _WifiConnectPageState extends State<WifiConnectPage> {
   final TextEditingController _ssidController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String? _wifiIp;    // 用于存储获取的WiFi IP地址
-  String? _wifiSSID;  // 用于存储获取的WiFi SSID
+  String? _wifiIp;
+  String? _wifiSSID;
 
   @override
   void initState() {
     super.initState();
-    _getWifiIp();
-    _getWifiInfo();
+    requestPermissions();
   }
 
-  Future<void> _getWifiIp() async {
-    final info = NetworkInfo();
-    var wifiIp = await info.getWifiIP();
-    setState(() {
-      _wifiIp = wifiIp;
-    });
-    print("Wi-Fi IP: $_wifiIp");
+  Future<void> requestPermissions() async {
+    if (await Permission.location.request().isGranted) {
+      _getWifiInfo();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Location permission is needed to access WiFi info')),
+      );
+    }
   }
+
   Future<void> _getWifiInfo() async {
     final info = NetworkInfo();
     var wifiIp = await info.getWifiIP();
-    var wifiSSID = await info.getWifiName();  // 获取WiFi名称
+    var wifiSSID = await info.getWifiName();
     setState(() {
       _wifiIp = wifiIp;
-      _wifiSSID = wifiSSID;  // 存储SSID
+      _wifiSSID = wifiSSID;
     });
+    print("Wi-Fi IP: $_wifiIp");
+    print("Wi-Fi name: $_wifiSSID");
   }
 
   void _copyToClipboard() {
-    // 提供一个默认值以防 `_wifiSSID` 是 `null`
     Clipboard.setData(ClipboardData(text: _wifiSSID ?? "未连接"));
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('SSID已复制到剪贴板'),
-      ),
+      SnackBar(content: Text('SSID已复制到剪贴板')),
     );
   }
 
-
-  void _sendWifiCredentials() async {
+  void _sendWifiCredentials() {
     if (_ssidController.text.isEmpty || _passwordController.text.isEmpty) {
       showDialog(
         context: context,
@@ -78,7 +78,7 @@ class _WifiConnectPageState extends State<WifiConnectPage> {
     RawDatagramSocket.bind(InternetAddress.anyIPv4, 0).then((socket) {
       final message = 'SSID:$ssid;PASSWORD:$password;';
       List<int> data = message.codeUnits;
-      socket.send(data, InternetAddress(_wifiIp!), 80); // 使用获取的IP地址发送消息
+      socket.send(data, InternetAddress(_wifiIp!), 80);
       print('Credentials sent: $message');
       socket.close();
     }).catchError((e) {
@@ -135,8 +135,8 @@ class _WifiConnectPageState extends State<WifiConnectPage> {
                   onPressed: _sendWifiCredentials,
                   child: const Text('发送WiFi凭证'),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.lightBlue[200], // 按钮的背景颜色设置为淡蓝色
-                    onPrimary: Colors.white, // 文字颜色
+                    primary: Colors.lightBlue[200], // 按钮的背景色为淡蓝色
+                    onPrimary: Colors.white,
                   ),
                 ),
               ),
