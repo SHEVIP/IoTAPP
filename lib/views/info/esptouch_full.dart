@@ -7,15 +7,14 @@ import 'dart:async';
 import 'package:esptouch_flutter/esptouch_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:network_info_plus/network_info_plus.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatefulWidget {
+class esptouch extends StatefulWidget {
   @override
-  _MyAppState createState() => _MyAppState();
+  _esptouchState createState() => _esptouchState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _esptouchState extends State<esptouch> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController ssid = TextEditingController();
   final TextEditingController bssid = TextEditingController();
@@ -60,7 +59,7 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         appBar: AppBar(
           title: Text(
-            'ESP-TOUCH',
+            '帮助周边设备连接wifi',
             style: TextStyle(
               fontFamily: 'serif-monospace',
               fontWeight: FontWeight.w800,
@@ -523,17 +522,18 @@ const helperPassword = "wifi 密码";
 /// [`wifi_info_flutter`](https://pub.dev/packages/wifi_info_flutter) packages.
 ///
 /// For more info: https://github.com/smaho-engineering/esptouch_flutter/blob/master/example/README.md#get-wifi-details
+///
+
 class SimpleWifiInfo {
-  static const platform =
-  MethodChannel('eng.smaho.com/esptouch_plugin/example');
+  static Future<String?> get ssid async {
+    final networkInfo = NetworkInfo();
+    final wifiName = await networkInfo.getWifiName();
+    return wifiName;
+  }
 
-  /// Get WiFi SSID using platform channels.
-  ///
-  /// Can return null if BSSID information is not available.
-  static Future<String?> get ssid => platform.invokeMethod('ssid');
-
-  /// Get WiFi BSSID using platform channels.
-  ///
-  /// Can return null if BSSID information is not available.
-  static Future<String?> get bssid => platform.invokeMethod('bssid');
+  static Future<String?> get bssid async {
+    final networkInfo = NetworkInfo();
+    final wifiBSSID = await networkInfo.getWifiBSSID();
+    return wifiBSSID;
+  }
 }
