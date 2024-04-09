@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:esptouch_flutter/esptouch_flutter.dart';
+
 
 class WifiConnectPage extends StatefulWidget {
   const WifiConnectPage({Key? key}) : super(key: key);
@@ -13,33 +15,50 @@ class WifiConnectPage extends StatefulWidget {
 class _WifiConnectPageState extends State<WifiConnectPage> {
   final TextEditingController _ssidController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  final TextEditingController _bssidController = TextEditingController();
+
   String? _wifiIp;    // 用于存储获取的WiFi IP地址
-  String? _wifiSSID;  // 用于存储获取的WiFi SSID
+  String? _wifiSSID;  // 用于存储获取的WiFi SSID;  // 用于存储获取的WiFi SSID
 
   @override
   void initState() {
     super.initState();
     _getWifiIp();
-    _getWifiInfo();
+    // _getWifiInfo();
   }
+  // const ssid = 'WiFi name';
+  // const bssid = 'WiFi BSSID';
+  // const password = 'password';
+
+  void executeEsptouch(ssid,bssid,password) {
+    final task = ESPTouchTask(ssid: ssid, bssid: bssid, password: password);
+    final Stream<ESPTouchResult> stream = task.execute();
+    final sub = stream.listen((r) => print('IP: ${r.ip} MAC: ${r.bssid}'));
+    Future.delayed(Duration(minutes: 1), () => sub.cancel());
+  }
+
 
   Future<void> _getWifiIp() async {
     final info = NetworkInfo();
     var wifiIp = await info.getWifiIP();
+    var wifiSSID = await info.getWifiName();
     setState(() {
       _wifiIp = wifiIp;
+      _wifiSSID = wifiSSID;
     });
     print("Wi-Fi IP: $_wifiIp");
+    print("Wi-Fi name: $_wifiSSID");
   }
-  Future<void> _getWifiInfo() async {
-    final info = NetworkInfo();
-    var wifiIp = await info.getWifiIP();
-    var wifiSSID = await info.getWifiName();  // 获取WiFi名称
-    setState(() {
-      _wifiIp = wifiIp;
-      _wifiSSID = wifiSSID;  // 存储SSID
-    });
-  }
+  // Future<void> _getWifiInfo() async {
+  //   final info = NetworkInfo();
+  //   var wifiIp = await info.getWifiIP();
+  //   var wifiSSID = await info.getWifiName();  // 获取WiFi名称
+  //   setState(() {
+  //     _wifiIp = wifiIp;
+  //     _wifiSSID = wifiSSID;  // 存储SSID
+  //   });
+  // }
 
   void _copyToClipboard() {
     // 提供一个默认值以防 `_wifiSSID` 是 `null`
@@ -53,7 +72,7 @@ class _WifiConnectPageState extends State<WifiConnectPage> {
 
 
   void _sendWifiCredentials() async {
-    if (_ssidController.text.isEmpty || _passwordController.text.isEmpty) {
+    if (_ssidController.text.isEmpty || _passwordController.text.isEmpty||_bssidController.text.isEmpty) {
       showDialog(
         context: context,
         builder: (BuildContext context) => AlertDialog(
@@ -74,16 +93,20 @@ class _WifiConnectPageState extends State<WifiConnectPage> {
 
     final String ssid = _ssidController.text;
     final String password = _passwordController.text;
+    final String bssid = _bssidController.text;
+    executeEsptouch(ssid,bssid,password);
 
-    RawDatagramSocket.bind(InternetAddress.anyIPv4, 0).then((socket) {
-      final message = 'SSID:$ssid;PASSWORD:$password;';
-      List<int> data = message.codeUnits;
-      socket.send(data, InternetAddress(_wifiIp!), 80); // 使用获取的IP地址发送消息
-      print('Credentials sent: $message');
-      socket.close();
-    }).catchError((e) {
-      print('Error sending credentials: $e');
-    });
+
+
+    // RawDatagramSocket.bind(InternetAddress.anyIPv4, 0).then((socket) {
+    //   final message = 'SSID:$ssid;PASSWORD:$password;';
+    //   List<int> data = message.codeUnits;
+    //   socket.send(data, InternetAddress(_wifiIp!), 80); // 使用获取的IP地址发送消息
+    //   print('Credentials sent: $message');
+    //   socket.close();
+    // }).catchError((e) {
+    //   print('Error sending credentials: $e');
+    // });
   }
 
   @override
@@ -115,6 +138,14 @@ class _WifiConnectPageState extends State<WifiConnectPage> {
               controller: _ssidController,
               decoration: const InputDecoration(
                 labelText: 'WiFi SSID',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _bssidController,
+              decoration: const InputDecoration(
+                labelText: 'WiFi BSSID',
                 border: OutlineInputBorder(),
               ),
             ),
