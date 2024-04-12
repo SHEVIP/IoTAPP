@@ -209,7 +209,7 @@ Future<double> getTodayWorkHours(int workerId) async {
   if (result?.data['status'] == 200) {
     var items = result?.data['data']['item'];
     double todayHours = 0.0;
-    for (var item in items) {
+    for (var item in items?? []) {
       var workHours = WorkHours.fromJson(item).getWorkHours();
       todayHours += workHours;
     }
@@ -232,7 +232,7 @@ Future<double> getMonthlyWorkHours(int workerId) async {
   if (result?.data['status'] == 200) {
     var items = result?.data['data']['item'];
     double monthlyHours = 0.0;
-    for (var item in items) {
+    for (var item in items?? []) {
       var workHours = WorkHours.fromJson(item).getWorkHours();
       monthlyHours += workHours;
     }

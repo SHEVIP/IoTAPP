@@ -8,6 +8,8 @@ import 'package:esptouch_flutter/esptouch_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:network_info_plus/network_info_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 class esptouch extends StatefulWidget {
   @override
@@ -79,7 +81,11 @@ class _esptouchState extends State<esptouch> {
     setState(() => fetchingWifiInfo = true);
     try {
       ssid.text = await SimpleWifiInfo.ssid ?? '';
+
       bssid.text = await SimpleWifiInfo.bssid ?? '';
+
+      if (ssid.text!="")
+      {ssid.text = ssid.text.substring(1,ssid.text.length-1);}
     } finally {
       setState(() => fetchingWifiInfo = false);
     }
@@ -120,14 +126,14 @@ class _esptouchState extends State<esptouch> {
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: <Widget>[
-          // Center(
-          //   child: OutlinedButton(
-          //     onPressed: fetchingWifiInfo ? null : fetchWifiInfo,
-          //     child: Text(
-          //       fetchingWifiInfo ? 'Fetching WiFi info' : 'Use current Wi-Fi',
-          //     ),
-          //   ),
-          // ),
+          Center(
+            child: OutlinedButton(
+              onPressed: fetchingWifiInfo ? null : fetchWifiInfo,
+              child: Text(
+                fetchingWifiInfo ? 'Fetching WiFi info' : 'Use current Wi-Fi',
+              ),
+            ),
+          ),
           TextFormField(
             controller: ssid,
             decoration: const InputDecoration(
@@ -224,6 +230,9 @@ class TaskRouteState extends State<TaskRoute> {
 
   @override
   void initState() {
+
+
+
     stream = widget.task.execute();
     streamSubscription = stream.listen(results.add);
     final receiving = widget.task.taskParameter.waitUdpReceiving;
@@ -252,7 +261,10 @@ class TaskRouteState extends State<TaskRoute> {
       },
     );
     super.initState();
+    // requestPermissions();
   }
+
+
 
   @override
   dispose() {
@@ -526,12 +538,18 @@ const helperPassword = "wifi 密码";
 
 class SimpleWifiInfo {
   static Future<String?> get ssid async {
+    var res = await Permission.location.request().isGranted;
+
+
     final networkInfo = NetworkInfo();
     final wifiName = await networkInfo.getWifiName();
+
     return wifiName;
   }
 
   static Future<String?> get bssid async {
+    var res = await Permission.location.request().isGranted;
+
     final networkInfo = NetworkInfo();
     final wifiBSSID = await networkInfo.getWifiBSSID();
     return wifiBSSID;
