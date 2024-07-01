@@ -20,8 +20,8 @@ dependencies:
   table_calendar: ^3.0.9
   intl: ^0.18.0
   network_info_plus: ^4.0.1
+  esptouch_flutter: ^1.0.0
   permission_handler: ^10.2.0
-
 # 开发依赖
 dev_dependencies:
   flutter_test:

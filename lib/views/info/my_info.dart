@@ -5,7 +5,8 @@ import 'package:untitled/views/info/my_info_detail_page.dart';
 import 'work_hours_details_page.dart';
 import 'package:untitled/utils/prefs_util.dart';
 import 'package:untitled/utils/network_util.dart';
-import 'package:untitled/views/info/wifi_connect.dart';
+// import 'package:untitled/views/info/wifi_connect.dart';
+import 'package:untitled/views/info/esptouch_full.dart';
 import '../../model/work_hours.dart';
 
 class MyInfoPage extends StatefulWidget {
@@ -164,7 +165,7 @@ class _MyInfoPageState extends State<MyInfoPage> {
                 child: ElevatedButton(
                   onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const WifiConnectPage()),
+                    MaterialPageRoute(builder: (context) => esptouch()),
                   ),
                   child: const Text('为网联设备配对WIFI', style: TextStyle(fontSize: 18),),
                   style: ElevatedButton.styleFrom(
@@ -208,7 +209,7 @@ Future<double> getTodayWorkHours(int workerId) async {
   if (result?.data['status'] == 200) {
     var items = result?.data['data']['item'];
     double todayHours = 0.0;
-    for (var item in items) {
+    for (var item in items?? []) {
       var workHours = WorkHours.fromJson(item).getWorkHours();
       todayHours += workHours;
     }
@@ -231,7 +232,7 @@ Future<double> getMonthlyWorkHours(int workerId) async {
   if (result?.data['status'] == 200) {
     var items = result?.data['data']['item'];
     double monthlyHours = 0.0;
-    for (var item in items) {
+    for (var item in items?? []) {
       var workHours = WorkHours.fromJson(item).getWorkHours();
       monthlyHours += workHours;
     }

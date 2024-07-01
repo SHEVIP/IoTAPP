@@ -1,26 +1,38 @@
 PODS:
+  - esptouch_flutter (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
   - network_info_plus (0.0.1):
+    - Flutter
+  - permission_handler_apple (9.1.1):
     - Flutter
   - shared_preferences (0.0.1):
     - Flutter
 
 DEPENDENCIES:
+  - esptouch_flutter (from `.symlinks/plugins/esptouch_flutter/ios`)
   - Flutter (from `Flutter`)
   - network_info_plus (from `.symlinks/plugins/network_info_plus/ios`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
 
 EXTERNAL SOURCES:
+  esptouch_flutter:
+    :path: ".symlinks/plugins/esptouch_flutter/ios"
   Flutter:
     :path: Flutter
   network_info_plus:
     :path: ".symlinks/plugins/network_info_plus/ios"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
 
 SPEC CHECKSUMS:
+  esptouch_flutter: e73da8791abdc4aa4a24ccda75f9505e1aa05474
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   network_info_plus: 6d0c3eb8367b8164fa3fb0c19875e3f59d49697f
+  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   shared_preferences: 5033afbb22d372e15aff8ff766df9021b845f273
 
 PODFILE CHECKSUM: 70d9d25280d0dd177a5f637cdb0f0b0b12c6a189
