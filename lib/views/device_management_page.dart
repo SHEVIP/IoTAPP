@@ -107,6 +107,7 @@ Widget build(BuildContext context) {
               return DeviceCard(
                 deviceName: device.name, // 使用设备的名称
                 deviceId: device.id,
+                deviceStatus_name: '1',
                 onTap: () => reportException(context, device), // 传入设备名称到异常上报函数
               );
             },
