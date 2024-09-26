@@ -24,6 +24,8 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
 
   Future<void> _loadData() async {
     setState(() {
+      _devices.clear();
+      _deviceExceptions.clear();
       _isLoading = true;
     });
     Map<String, dynamic> params = {
@@ -32,34 +34,40 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
       "limit": 10,
     };
 
+    Map<String, dynamic> params_workshop = {
+      "workshop_id": 999,
+    };
+
     try {
-      var exceptionResult = await NetworkUtil.getInstance().get("machineStatus/machineStatuss?start=1&limit=10");
+      var exceptionResult = await NetworkUtil.getInstance().get("machineStatus/machineStatuss?start=1&limit=999");
       if (exceptionResult != null && exceptionResult.data['status'] == 200 && exceptionResult.data['data']['item'] != null) {
         List<dynamic> items = exceptionResult.data['data']['item'];
         for (var item in items) {
           int deviceExceptionId = item['id'];
           String deviceExceptionName = item['status_name'];
-          DeviceException deviceException = DeviceException(id: deviceExceptionId,name: deviceExceptionName);
+          DeviceException deviceException = DeviceException(id: deviceExceptionId,name: deviceExceptionName,);
           _deviceExceptions.add(deviceException);
         }
+        DeviceException.initializeMap(_deviceExceptions);
       } else {
         debugPrint("ExceptionResult data is null or status is not 200");
       }
 
-      var result = await NetworkUtil.getInstance().get("worker/workers", params: params);
-      if (result != null && result.data['status'] == 200 && result.data['data']['item'] != null) {
-        List<dynamic> items = result.data['data']['item'];
+      var result = await NetworkUtil.getInstance().post("screen/newProductionBoard", params: params_workshop);
+      if (result != null && result.data['status'] == 200 && result.data['data'] != null) {
+        List<dynamic> items = result.data['data'];
         for (var item in items) {
-          if(item['machine_workers'] != null) {
-            List<dynamic> machineWorkers = item['machine_workers'];
-            for (var machineWorker in machineWorkers) {
-              int machineId = machineWorker['machine_id'];
-              Device device = Device(id: machineId,);
-              _devices.add(device);
-              await _fetchDeviceName(device);
-            }
+          if(item['machine_id'] != null) {
+            int machineId = item['machine_id'];
+            String machinename = item['machine_name'];
+            int workshopId = item['workshop_id'];
+            int machine_status_id = item['machine_status'];
+            Device device = Device(id: machineId,name: machinename, workshopId: workshopId, machine_status_id: machine_status_id);
+            _devices.add(device);
+           // await _fetchDeviceName(device);
+
           } else {
-            debugPrint("Machine workers data is null");
+            debugPrint("Machine data is null");
           }
         }
       } else {
@@ -104,9 +112,11 @@ Widget build(BuildContext context) {
             itemBuilder: (context, index) {
               // 获取对应索引的设备
               final device = _devices[index];
+              final exceptionName = DeviceException.findNameById(device.machine_status_id);
               return DeviceCard(
                 deviceName: device.name, // 使用设备的名称
                 deviceId: device.id,
+                deviceStatus_name: exceptionName,
                 onTap: () => reportException(context, device), // 传入设备名称到异常上报函数
               );
             },
@@ -182,7 +192,7 @@ Future<void> reportDeviceException(Device device, int exceptionId) async {
   };
 
   try {
-    var deviceResult = await NetworkUtil.getInstance().put("machine/$deviceId", params: deviceParams);
+    var deviceResult = await NetworkUtil.getInstance().put("newMachine/$deviceId", params: deviceParams);
 
     var result = await NetworkUtil.getInstance().post("machineLog", params: params);
     params.remove("time");
@@ -197,6 +207,9 @@ Future<void> reportDeviceException(Device device, int exceptionId) async {
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       debugPrint('异常上报成功');
+
+      // 刷新页面
+      _loadData();
     } else {
       debugPrint('异常上报失败：${response?.data['status']}');
     }

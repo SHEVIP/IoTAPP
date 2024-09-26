@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 class DeviceCard extends StatelessWidget {
   final String deviceName;
   final int deviceId;
+  final String deviceStatus_name;
   final VoidCallback onTap;
 
-  const DeviceCard({super.key, required this.deviceName, required this.deviceId,  required this.onTap});
+  const DeviceCard({super.key, required this.deviceName, required this.deviceId,  required this.deviceStatus_name ,required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -18,12 +19,30 @@ class DeviceCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                deviceName,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        deviceName,
+                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        deviceStatus_name,
+                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 8.0),
-              const Text('设备描述......'),
+              //const Text('设备描述......'),
             ],
           ),
         ),
