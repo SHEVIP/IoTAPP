@@ -18,6 +18,8 @@ class CommonPreferences {
   static final userid = PrefsBean<int>('userid');  // userid
   static final workerid = PrefsBean<int>('workerid');
   static final workertype = PrefsBean<String>('workertype'); //worker type
+  static final permission_id = PrefsBean<int>('permission_id'); //用户权限
+
 
   // 初始化
   static Future<void> init() async {

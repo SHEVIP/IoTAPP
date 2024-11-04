@@ -20,6 +20,7 @@ class MyInfoPage extends StatefulWidget {
 class _MyInfoPageState extends State<MyInfoPage> {
   double todayWorkHours = 0.0;
   double monthlyWorkHours = 0.0;
+  int permission_id = CommonPreferences.permission_id.value;
 
   @override
   void initState() {
@@ -38,164 +39,340 @@ class _MyInfoPageState extends State<MyInfoPage> {
     });
   }
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   final String name = CommonPreferences.workername.value;
+  //   final int workerid = CommonPreferences.workerid.value;
+  //   final String workertype = CommonPreferences.workertype.value;
+  //
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       title: const Text('个人信息'),
+  //       backgroundColor: Colors.grey[200],
+  //       centerTitle: true,
+  //     ),
+  //     body: Container(
+  //       color: Colors.grey[200],
+  //       child: Column(
+  //         children: <Widget>[
+  //           Expanded(
+  //             child: ListView(
+  //               children: <Widget>[
+  //                 InkWell(
+  //                   onTap: () {
+  //                     Navigator.push(
+  //                         context,
+  //                         MaterialPageRoute(
+  //                             builder: (context) => const MyInfoDetailPage()));
+  //                   },
+  //                   child: Container(
+  //                     height: 150.0,
+  //                     padding: const EdgeInsets.all(10.0),
+  //                     child: Row(
+  //                       children: <Widget>[
+  //                         const SizedBox(width: 10.0),
+  //                         const CircleAvatar(
+  //                           radius: 50,
+  //                           backgroundImage: AssetImage('assets/images/worker.png'),
+  //                         ),
+  //                         const SizedBox(width: 10.0),
+  //                         Expanded(
+  //                           child: Padding(
+  //                             padding: const EdgeInsets.symmetric(horizontal: 10.0),
+  //                             child: Column(
+  //                               crossAxisAlignment: CrossAxisAlignment.start,
+  //                               mainAxisAlignment: MainAxisAlignment.center,
+  //                               children: [
+  //                                 Text(
+  //                                   name,
+  //                                   style: const TextStyle(
+  //                                     fontWeight: FontWeight.bold,
+  //                                     fontSize: 26,
+  //                                   ),
+  //                                 ),
+  //                                 const SizedBox(height: 16.0),
+  //                                 Row(
+  //                                   children: [
+  //                                     Text(
+  //                                       '工号: $workerid',
+  //                                       style: const TextStyle(color: Colors.blue, fontSize: 18),
+  //                                     ),
+  //                                     const SizedBox(width: 20.0),
+  //                                     Text(
+  //                                       '工种: $workertype',
+  //                                       style: const TextStyle(color: Colors.grey, fontSize: 18),
+  //                                     ),
+  //                                   ],
+  //                                 ),
+  //                               ],
+  //                             ),
+  //                           ),
+  //                         ),
+  //                         const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
+  //                         const SizedBox(width: 10.0),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 Card(
+  //                   margin: const EdgeInsets.all(12.0),
+  //                   child: Padding(
+  //                     padding: const EdgeInsets.all(12.0),
+  //                     child: Row(
+  //                       mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //                       children: [
+  //                         Expanded(
+  //                           child: Column(
+  //                             children: [
+  //                               const Text(
+  //                                 '今日工时',
+  //                                 style: TextStyle(fontSize: 22),
+  //                               ),
+  //                               const SizedBox(height: 6),
+  //                               Text(
+  //                                 '${todayWorkHours.toStringAsFixed(1)}小时',
+  //                                 style: const TextStyle(fontSize: 14, color: Colors.green),
+  //                               ),
+  //                             ],
+  //                           ),
+  //                         ),
+  //                         Container(
+  //                           height: 60,
+  //                           width: 3,
+  //                           color: Colors.grey[400],
+  //                           margin: const EdgeInsets.symmetric(horizontal: 12),
+  //                         ),
+  //                         Expanded(
+  //                           child: Column(
+  //                             children: [
+  //                               const Text(
+  //                                 '本月累计工时',
+  //                                 style: TextStyle(fontSize: 22),
+  //                               ),
+  //                               const SizedBox(height: 6),
+  //                               Text(
+  //                                 '${monthlyWorkHours.toStringAsFixed(1)}小时',
+  //                                 style: const TextStyle(fontSize: 14, color: Colors.green),
+  //                               ),
+  //                             ],
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 // Center(
+  //                 //   child: Container(
+  //                 //     width: MediaQuery.of(context).size.width * 0.6,
+  //                 //     child: ElevatedButton(
+  //                 //       onPressed: () => Navigator.push(
+  //                 //         context,
+  //                 //         MaterialPageRoute(builder: (context) => esptouch()),
+  //                 //       ),
+  //                 //       child: const Text('为网联设备配对WIFI', style: TextStyle(fontSize: 18)),
+  //                 //       style: ElevatedButton.styleFrom(
+  //                 //         primary: Colors.white,
+  //                 //         onPrimary: Colors.lightBlue[500],
+  //                 //         elevation: 2,
+  //                 //         shape: RoundedRectangleBorder(
+  //                 //           borderRadius: BorderRadius.circular(8),
+  //                 //         ),
+  //                 //         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 15),
+  //                 //       ),
+  //                 //     ),
+  //                 //   ),
+  //                 // ),
+  //               ],
+  //             ),
+  //           ),
+  //           // 将“退出登录”按钮固定在底部
+  //           Padding(
+  //             padding: const EdgeInsets.all(16.0),
+  //             child: ElevatedButton(
+  //               onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+  //               style: ElevatedButton.styleFrom(
+  //                 primary: Colors.blue, // 按钮背景颜色
+  //                 onPrimary: Colors.white, // 按钮文字颜色
+  //                 minimumSize: Size(double.infinity, 50), // 按钮宽度和高度
+  //                 shape: RoundedRectangleBorder(
+  //                   borderRadius: BorderRadius.circular(12), // 按钮圆角
+  //                 ),
+  //               ),
+  //               child: const Text(
+  //                 '退出登录',
+  //                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     final String name = CommonPreferences.workername.value;
-    final int workerid = CommonPreferences.workerid.value ; // 如果没有值，则返回 'N/A'
+    final int workerid = CommonPreferences.workerid.value;
     final String workertype = CommonPreferences.workertype.value;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('个人信息', style: TextStyle(fontSize: 26)),
-        backgroundColor: Colors.grey[200], // 更改AppBar颜色
+        title: const Text('个人信息'),
+        backgroundColor: Colors.grey[200],
+        centerTitle: true,
       ),
       body: Container(
-        color: Colors.grey[200], // 整体背景色设置为浅灰色
-        child: ListView(
+        color: Colors.grey[200],
+        child: Column(
           children: <Widget>[
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const MyInfoDetailPage()));
-              },
-              child: Container(
-                height: 150.0,
-                padding: const EdgeInsets.all(10.0),
-                child:  Row(
-                  children: <Widget>[
-                    SizedBox(width: 10.0),
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: NetworkImage(
-                          'https://hbimg.b0.upaiyun.com/dd0b6ebc62b4616d01949f867e5dfd4dc904913c4b23e-AKkABT_fw658'),
-                    ),
-                    SizedBox(width: 10.0),
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(name, style: TextStyle(fontWeight: FontWeight.bold,fontSize: 26)),
-                            SizedBox(height: 16.0),
-                            Row(
-                              children: [
-                                Text('工号: $workerid', style:TextStyle(color: Colors.blue,fontSize: 18)),
-                                SizedBox(width: 20.0),
-                                Text('工种: $workertype', style:TextStyle(color: Colors.grey,fontSize: 18)),
-                              ],
-                            ),
-                          ],
+            Expanded(
+              child: ListView(
+                children: <Widget>[
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MyInfoDetailPage(),
                         ),
+                      );
+                    },
+                    child: Container(
+                      height: 150.0,
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        children: <Widget>[
+                          const SizedBox(width: 10.0),
+                          const CircleAvatar(
+                            radius: 50,
+                            backgroundImage: AssetImage('assets/images/worker.png'),
+                          ),
+                          const SizedBox(width: 10.0),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    name,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 26,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16.0),
+                                  permission_id == 2
+                                      ? Row(
+                                    children: [
+                                      Text(
+                                        '工号: $workerid',
+                                        style: const TextStyle(
+                                            color: Colors.blue, fontSize: 18),
+                                      ),
+                                      const SizedBox(width: 20.0),
+                                      Text(
+                                        '工种: $workertype',
+                                        style: const TextStyle(
+                                            color: Colors.grey, fontSize: 18),
+                                      ),
+                                    ],
+                                  )
+                                      : Container(), // 如果 permission_id 为 1，则显示空白容器
+                                ],
+                              ),
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios,
+                              color: Colors.grey, size: 16),
+                          const SizedBox(width: 10.0),
+                        ],
                       ),
                     ),
-                    Icon(Icons.arrow_forward_ios, color: Colors.grey,size: 16),
-                    SizedBox(width: 10.0),
-                  ],
-                ),
-              ),
-            ),
-            // 工时信息部分，为了增加间隔，我们使用Container包裹Column
-            Card(
-              margin: const EdgeInsets.all(12.0),
-              child: Padding(
-                padding: const EdgeInsets.all(12.0), // 卡片内边距
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround, // 平均分布空间
-                  children: [
-                    // 今日工时部分
-                    Expanded(
-                      child: Column(
+                  ),
+                  permission_id == 2
+                      ? Card(
+                    margin: const EdgeInsets.all(12.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          const Text(
-                            '今日工时',
-                            style: TextStyle(fontSize: 22), // 调整字体大小
+                          Expanded(
+                            child: Column(
+                              children: [
+                                const Text(
+                                  '今日工时',
+                                  style: TextStyle(fontSize: 22),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  '${todayWorkHours.toStringAsFixed(1)}小时',
+                                  style: const TextStyle(
+                                      fontSize: 14, color: Colors.green),
+                                ),
+                              ],
+                            ),
                           ),
-                          SizedBox(height: 6), // 标题和数字之间的间隙
-                          Text(
-                            '${todayWorkHours.toStringAsFixed(1)}小时',
-                            style: TextStyle(fontSize: 14, color: Colors.green), // 调整字体大小和颜色
+                          Container(
+                            height: 60,
+                            width: 3,
+                            color: Colors.grey[400],
+                            margin:
+                            const EdgeInsets.symmetric(horizontal: 12),
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                const Text(
+                                  '本月累计工时',
+                                  style: TextStyle(fontSize: 22),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  '${monthlyWorkHours.toStringAsFixed(1)}小时',
+                                  style: const TextStyle(
+                                      fontSize: 14, color: Colors.green),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-
-                    // 垂直分割线
-                    Container(
-                      height: 60, // 分割线高度
-                      width: 3, // 分割线宽度
-                      color: Colors.grey[400], // 分割线颜色
-                      margin: const EdgeInsets.symmetric(horizontal: 12), // 分割线水平间隙
-                    ),
-
-                    // 本月累计工时部分
-                    Expanded(
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const WorkHoursDetailsPage()),
-                          );
-                        },
-                        child:  Column(
-                          children: [
-                            const Text(
-                              '本月累计工时',
-                              style: TextStyle(fontSize: 22),
-                            ),
-                            Text(
-                              '${monthlyWorkHours.toStringAsFixed(1)}小时',
-                              style: TextStyle(fontSize: 14, color: Colors.green),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                  )
+                      : Container(), // 如果 permission_id 为 1，则显示空白容器
+                ],
+              ),
+            ),
+            // 将“退出登录”按钮固定在底部
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.blue, // 按钮背景颜色
+                  onPrimary: Colors.white, // 按钮文字颜色
+                  minimumSize: Size(double.infinity, 50), // 按钮宽度和高度
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12), // 按钮圆角
+                  ),
+                ),
+                child: const Text(
+                  '退出登录',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
-            Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.5,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => esptouch()),
-                  ),
-                  child: const Text('为网联设备配对WIFI', style: TextStyle(fontSize: 18),),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.white, // 设置按钮背景颜色为淡蓝色
-                    onPrimary: Colors.lightBlue[500], // 设置文字颜色为白色
-                    elevation: 2, // 设置阴影
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8), // 设置按钮的圆角
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 15), // 设置内边距
-                  ),
-                ),
-              ),
-            ),
-
-            const MessageScroll(),
-            ElevatedButton(
-              child: const Text('退出登录'),
-              onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
-            ),
-            // 如果需要在列表底部增加灰色背景，可以添加额外的空白Container
-            // Container(
-            //   height: MediaQuery.of(context).size.height,
-            //   color: Colors.grey[200], // 底部灰色背景
-            // ),
           ],
         ),
       ),
     );
   }
+
+
 }
 
 Future<double> getTodayWorkHours(int workerId) async {

@@ -360,14 +360,22 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "6.0.2"
+  pie_chart:
+    dependency: "direct main"
+    description:
+      name: pie_chart
+      sha256: "58e6a46999ac938bfa1c3e5be414d6e149f037647197dca03ba3614324c12c82"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "5.4.0"
   platform:
     dependency: transitive
     description:
       name: platform
-      sha256: "9b71283fc13df574056616011fb138fd3b793ea47cc509c189a6c3fa5f8a1a65"
+      sha256: "5d6b1b0036a5f331ebc77c850ebc8506cbc1e9416c27e59b439f917a902a4984"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "3.1.5"
+    version: "3.1.6"
   plugin_platform_interface:
     dependency: transitive
     description:

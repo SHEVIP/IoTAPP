@@ -60,6 +60,13 @@ class _esptouchState extends State<esptouch> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
+          // 添加返回按钮
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context); // 返回上一级页面
+            },
+          ),
           title: Text(
             '帮助周边设备连接wifi',
             style: TextStyle(

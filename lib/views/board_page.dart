@@ -16,28 +16,29 @@ class _BoardPageState extends State<BoardPage> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        appBar: AppBar(
-            toolbarHeight: 0,
-            bottom: const TabBar(
-              tabs: [
-                Tab(
-                  text: '生产状态',
-                ),
-                Tab(
-                  text: '工单列表',
-                ),
-                Tab(
-                  text: '设备效率',
-                ),
-              ],
-            )),
-        body: const TabBarView(
-          children: [
-            ProducingStatusBoard(),
-            OrderList(),
-            OEEBoard(),
-          ],
-        ),
+        // appBar: AppBar(
+        //     toolbarHeight: 0,
+        //     bottom: const TabBar(
+        //       tabs: [
+        //         Tab(
+        //           text: '生产状态',
+        //         ),
+        //         Tab(
+        //           text: '工单列表',
+        //         ),
+        //         Tab(
+        //           text: '设备效率',
+        //         ),
+        //       ],
+        //     )),
+        // body: const TabBarView(
+        //   children: [
+        //     ProducingStatusBoard(),
+        //     OrderList(),
+        //     OEEBoard(),
+        //   ],
+        // ),
+        body: OrderList(),
       ),
     );
   }

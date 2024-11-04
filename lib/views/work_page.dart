@@ -17,26 +17,27 @@ class _WorkPageState extends State<WorkPage> {
       appBar: AppBar(
         toolbarHeight: 0,
       ),
-      body: DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-            toolbarHeight: 0,
-            bottom: const TabBar(tabs: [
-              Tab(text: "设备管理"),
-              Tab(text: "安全管理"),
-              Tab(text: "库存管理"),
-            ]),
-          ),
-          body: TabBarView(
-            children: [
-              DeviceManagementPage(),
-              SecurityManagementPage(),
-              InventoryPage(),
-            ],
-          ),
-        ),
-      ),
+      body: DeviceManagementPage(),
+      // DefaultTabController(
+      //   length: 3,
+      //   child: Scaffold(
+      //     appBar: AppBar(
+      //       toolbarHeight: 0,
+      //       bottom: const TabBar(tabs: [
+      //         Tab(text: "设备管理"),
+      //         Tab(text: "安全管理"),
+      //         Tab(text: "库存管理"),
+      //       ]),
+      //     ),
+      //     body: TabBarView(
+      //       children: [
+      //         DeviceManagementPage(),
+      //         SecurityManagementPage(),
+      //         InventoryPage(),
+      //       ],
+      //     ),
+      //   ),
+      // ),
     );
   }
 }

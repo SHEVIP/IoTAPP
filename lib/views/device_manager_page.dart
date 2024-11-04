@@ -1,4 +1,3 @@
-import 'package:dio/src/response.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:untitled/components/work/device_card.dart';
@@ -6,13 +5,13 @@ import 'package:untitled/model/device.dart';
 import 'package:untitled/model/exception.dart';
 import 'package:untitled/utils/network_util.dart';
 import 'package:untitled/utils/prefs_util.dart';
-class DeviceManagementPage extends StatefulWidget {
-  const DeviceManagementPage({super.key});
+class DeviceManagertPage extends StatefulWidget {
+  const DeviceManagertPage({super.key});
 
   @override
-  State<DeviceManagementPage> createState() => _DeviceManagementPageState();
+  State<DeviceManagertPage> createState() => _DeviceManagertPageState();
 }
-class _DeviceManagementPageState extends State<DeviceManagementPage> {
+class _DeviceManagertPageState extends State<DeviceManagertPage> {
   List<Device> _devices = [];
   List<DeviceException> _deviceExceptions = [];
   List<Device> _messages = [];
@@ -61,6 +60,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
         debugPrint(result.data.toString());
         List<dynamic> newMachines = result.data['data']['new_machines'];
         List<dynamic> thirdPartyMachines = result.data['data']['third_party_machines'];
+
         // List<dynamic> items = result.data['data']['new_machines'];
         // items.addAll(result.data['data']['third_party_machines']);
         // for (var item in items) {
@@ -72,13 +72,12 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
         //     int machine_status_id = item['machine_status'] is Null ? item['machine_status_id'] : item['machine_status'];
         //     Device device = Device(id: machineId,name: machinename, workshopId: workshopId, machine_status_id: machine_status_id);
         //     _devices.add(device);
-        //    // await _fetchDeviceName(device);
+        //     // await _fetchDeviceName(device);
         //
         //   } else {
         //     debugPrint("Machine data is null");
         //   }
         // }
-        // _devices = items.map<Device>((json) => Device.fromJson(json)).toList();
 
         _devices = [
           ...newMachines.map((item) => Device.fromJson(item, true)),
@@ -100,43 +99,18 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
 
 
   Future<void> _fetchDeviceName(Device device) async {
-  try {
-    var response = await NetworkUtil.getInstance().get('machine/${device.id}');
-    if (response != null && response.data['status'] == 200) {
-      String deviceName = response.data['data']['machine_name']; // 根据实际返回的数据结构进行调整
-      int workshopId = response.data['data']['workshop_id']; // 根据实际返回的数据结构进行调整
-      device.updateName(deviceName);
-      device.updateworkshopId(workshopId);
+    try {
+      var response = await NetworkUtil.getInstance().get('machine/${device.id}');
+      if (response != null && response.data['status'] == 200) {
+        String deviceName = response.data['data']['machine_name']; // 根据实际返回的数据结构进行调整
+        int workshopId = response.data['data']['workshop_id']; // 根据实际返回的数据结构进行调整
+        device.updateName(deviceName);
+        device.updateworkshopId(workshopId);
+      }
+    } catch (e) {
+      debugPrint("获取设备名称出错: $e");
     }
-  } catch (e) {
-    debugPrint("获取设备名称出错: $e");
   }
-}
-// @override
-// Widget build(BuildContext context) {
-//   return Scaffold(
-//     appBar: AppBar(
-//       toolbarHeight: 0,
-//     ),
-//     body: _isLoading
-//         ? const Center(child: CircularProgressIndicator())
-//         : ListView.builder(
-//             padding: const EdgeInsets.all(16.0),
-//             itemCount: _devices.length, // 使用_devices列表的长度作为列表项计数
-//             itemBuilder: (context, index) {
-//               // 获取对应索引的设备
-//               final device = _devices[index];
-//               final exceptionName = DeviceException.findNameById(device.machine_status_id);
-//               return DeviceCard(
-//                 deviceName: device.name, // 使用设备的名称
-//                 deviceId: device.id,
-//                 deviceStatus_name: exceptionName,
-//                 onTap: () => reportException(context, device), // 传入设备名称到异常上报函数
-//               );
-//             },
-//           ),
-//   );
-// }
 
   Color getStatusColor(int status) {
     switch (status) {
@@ -176,7 +150,7 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
             ),
             alignment: Alignment.center,
             child: Text(
-              "员工页面",
+              "经理页面",
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -332,56 +306,55 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
     );
   }
 
-
-
-// void reportException(BuildContext context, Device device) {
-//   showModalBottomSheet(
-//     context: context,
-//     builder: (BuildContext context) {
-//       return ClipRRect(
-//         borderRadius: const BorderRadius.vertical(top: Radius.circular(20.0)),
-//         child: Container(
-//           padding: const EdgeInsets.all(16.0),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             mainAxisSize: MainAxisSize.min,
-//             children: [
-//               Text(
-//                 '设备状态上报 - ${device.name}',
-//                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-//               ),
-//               const SizedBox(height: 16.0),
-//               const Text('选择上报内容：'),
-//               const SizedBox(height: 8.0),
-//               Expanded(
-//                 child: GridView.builder(
-//                   shrinkWrap: true,
-//                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-//                     crossAxisCount: 2, // 两列
-//                     crossAxisSpacing: 10, // 水平间距
-//                     mainAxisSpacing: 10, // 垂直间距
-//                     childAspectRatio: 3, // 宽高比为3
-//                   ),
-//                   itemCount: _deviceExceptions.length,
-//                   itemBuilder: (context, index) {
-//                     final exception = _deviceExceptions[index];
-//                     return ElevatedButton(
-//                       onPressed: () async {
-//                         await reportDeviceException(device, exception.id);
-//                         Navigator.pop(context);
-//                       },
-//                       child: Text(exception.name),
-//                     );
-//                   },
-//                 ),
-//               ),
-//             ],
+// // 构建 NewMachine 卡片内容
+//   Widget _buildNewMachineCard(NewMachine device) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text(
+//           device.name,
+//           style: TextStyle(
+//             fontWeight: FontWeight.bold,
+//             fontSize: 18,
+//             color: Colors.black,
 //           ),
 //         ),
-//       );
-//     },
-//   );
-// }
+//         const SizedBox(height: 6),
+//         Text('状态: ${device.machine_status_name}', style: TextStyle(color: Colors.black, fontSize: 14)),
+//         Text('运行时间: ${device.run_time} 分钟', style: TextStyle(color: Colors.black, fontSize: 14)),
+//         Text('加工时间: ${device.cut_time} 分钟', style: TextStyle(color: Colors.black, fontSize: 14)),
+//         Text('循环时间: ${device.cycle_time} 分钟', style: TextStyle(color: Colors.black, fontSize: 14)),
+//         Text('上电时间: ${device.power_on_time} 分钟', style: TextStyle(color: Colors.black, fontSize: 14)),
+//         Text('告警个数: ${device.alm_count}', style: TextStyle(color: Colors.black, fontSize: 14)),
+//         Text('车间号: ${device.workshopId}', style: TextStyle(color: Colors.black, fontSize: 14)),
+//       ],
+//     );
+//   }
+//
+// // 构建 ThirdPartyMachine 卡片内容
+//   Widget _buildThirdPartyMachineCard(ThirdPartyMachine device) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text(
+//           device.name,
+//           style: TextStyle(
+//             fontWeight: FontWeight.bold,
+//             fontSize: 18,
+//             color: Colors.black,
+//           ),
+//         ),
+//         const SizedBox(height: 6),
+//         Text('状态: ${device.machine_status_name}', style: TextStyle(color: Colors.black, fontSize: 14)),
+//         Text('完成托盘计数: ${device.cur1}', style: TextStyle(color: Colors.black, fontSize: 14)),
+//         Text('坏料完成计数: ${device.cur2}', style: TextStyle(color: Colors.black, fontSize: 14)),
+//         Text('GT2检测高度: ${device.gt2_h_value}', style: TextStyle(color: Colors.black, fontSize: 14)),
+//         Text('上料电缸位置: ${device.pos1}', style: TextStyle(color: Colors.black, fontSize: 14)),
+//         Text('下料电缸位置: ${device.pos2}', style: TextStyle(color: Colors.black, fontSize: 14)),
+//         Text('车间号: ${device.workshopId}', style: TextStyle(color: Colors.black, fontSize: 14)),
+//       ],
+//     );
+//   }
 
 
   void reportException(BuildContext context, Device device) {
@@ -476,64 +449,53 @@ class _DeviceManagementPageState extends State<DeviceManagementPage> {
     );
   }
 
-
   String formatTimestamp(DateTime dateTime) {
-  final DateFormat formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-  return formatter.format(dateTime);
-}
+    final DateFormat formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    return formatter.format(dateTime);
+  }
 
-Future<void> reportDeviceException(Device device, int exceptionId) async {
-  String timestamp = formatTimestamp(DateTime.now());
-  int deviceId = device.id;
-  int workshopId = device.workshopId;
-  String deviceType = device.runtimeType.toString();
-  debugPrint("deviceType:$deviceType");
-  Map<String, dynamic> params = {
-    "machine_id": deviceId,
-    "machine_status_id": exceptionId,
-    "time": timestamp, // ISO 8601 格式的时间戳
-  };
-  Map<String, dynamic> deviceParams = {
-    "workshop_id": workshopId,
-    "machine_status_id": exceptionId,
-  };
+  Future<void> reportDeviceException(Device device, int exceptionId) async {
+    String timestamp = formatTimestamp(DateTime.now());
+    int deviceId = device.id;
+    int workshopId = device.workshopId;
+    Map<String, dynamic> params = {
+      "machine_id": deviceId,
+      "machine_status_id": exceptionId,
+      "time": timestamp, // ISO 8601 格式的时间戳
+    };
+    Map<String, dynamic> deviceParams = {
+      "workshop_id": workshopId,
+      "machine_status_id": exceptionId,
+    };
 
-  debugPrint(params.toString());
-
-  Response? deviceResult;
-  try {
-    if(deviceType == 'NewMachine'){
-      deviceResult = await NetworkUtil.getInstance().put("newMachine/$deviceId", params: deviceParams);
-    } else {
-      deviceResult = await NetworkUtil.getInstance().put("thirdPartyMachine/$deviceId", params: deviceParams);
-    }
-
-    // 刷新页面
-    _loadData();
-
-    var result = await NetworkUtil.getInstance().post("machineLog", params: params);
-    params.remove("time");
-    var response = await NetworkUtil.getInstance().post('machineAnomaly',params: params);
-
-    // 根据 response 处理结果
-    if (response?.data['status'] == 200 && result?.data['status']==200  && deviceResult?.data['status']==200) {
-      // 弹出提醒
-      const snackBar = SnackBar(
-        content: Text('异常上报成功!'),
-        duration: Duration(seconds: 1),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      debugPrint('异常上报成功');
-
+    try {
+      var deviceResult = await NetworkUtil.getInstance().put("newMachine/$deviceId", params: deviceParams);
       // 刷新页面
       _loadData();
-    } else {
-      debugPrint('异常上报失败：${response?.data['status']}');
+
+      var result = await NetworkUtil.getInstance().post("machineLog", params: params);
+      params.remove("time");
+      var response = await NetworkUtil.getInstance().post('machineAnomaly',params: params);
+
+      // 根据 response 处理结果
+      if (response?.data['status'] == 200 && result?.data['status']==200  && deviceResult?.data['status']==200) {
+        // 弹出提醒
+        const snackBar = SnackBar(
+          content: Text('异常上报成功!'),
+          duration: Duration(seconds: 1),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        debugPrint('异常上报成功');
+
+        // 刷新页面
+        _loadData();
+      } else {
+        debugPrint('异常上报失败：${response?.data['status']}');
+      }
+    } catch (e) {
+      debugPrint('发送异常上报请求错误：$e');
     }
-  } catch (e) {
-    debugPrint('发送异常上报请求错误：$e');
   }
-}
 
 }
 

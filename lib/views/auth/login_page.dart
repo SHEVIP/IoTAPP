@@ -3,7 +3,6 @@ import 'package:untitled/utils/network_util.dart';
 import 'package:untitled/utils/network_util1.dart';
 import 'package:untitled/utils/prefs_util.dart';
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -16,53 +15,33 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   _login() async {
-    Map<String, dynamic> params = Map();
-    params["user_name"] = _usernameController.text;
-    params["password"] = _passwordController.text;
-    CommonPreferences.isLogin.value = true;
-    CommonPreferences.workername.value = "徐志强";
-    CommonPreferences.userid.value = 1;
-    CommonPreferences.workerid.value = 1;
-    CommonPreferences.workertype.value = "worker1";
+    Map<String, dynamic> params = {
+      "user_name": _usernameController.text,
+      "password": _passwordController.text,
+    };
 
-    // 弹出提醒
-    // const snackBar = SnackBar(
-    //   content: Text('登录成功'),
-    //   duration: Duration(seconds: 1),
-    // );
-    // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-    // 跳转首页
-    //Navigator.pushReplacementNamed(context, '/home');
     var result = await NetworkUtil1.getInstance().post("user/login", params: params);
-    print('${result?.data}');
     if (result?.data['status'] != 200) {
-      // 弹出提醒
       const snackBar = SnackBar(
         content: Text('账户或密码错误'),
-        duration: Duration(seconds: 1),
+        duration: Duration(seconds: 2),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
-      // 保存结果
       CommonPreferences.isLogin.value = true;
       CommonPreferences.username.value = _usernameController.text;
       CommonPreferences.password.value = _passwordController.text;
-
       CommonPreferences.workername.value = result?.data['data']['user']['user_name'];
-      //CommonPreferences.userid.value = result?.data['data']['user']['user_id'];
       CommonPreferences.userid.value = 1;
-      // api未提供worker_id
       CommonPreferences.workerid.value = 1;
+      CommonPreferences.permission_id.value = result?.data['data']['user']['permission_id'];
 
-      // 弹出提醒
       const snackBar = SnackBar(
         content: Text('登录成功'),
-        duration: Duration(seconds: 1),
+        duration: Duration(seconds: 2),
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-      // 跳转首页
       Navigator.pushReplacementNamed(context, '/home');
     }
   }
@@ -70,41 +49,67 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
-            const Text(
-              "登录",
-              style: TextStyle(fontSize: 20),
-            ),
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                labelText: '请输入用户名',
+      appBar: AppBar(
+        title: const Text("用户登录"),
+        centerTitle: true,
+        backgroundColor: Colors.blueAccent,
+        elevation: 0,
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "欢迎登录",
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.blueAccent),
               ),
-            ),
-            const SizedBox(height: 12.0),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: '请输入密码(字母与数字)',
+              const SizedBox(height: 40.0),
+              TextField(
+                controller: _usernameController,
+                decoration: InputDecoration(
+                  labelText: '用户名',
+                  prefixIcon: const Icon(Icons.person, color: Colors.blueAccent),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                ),
               ),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () async {
-                await _login();
-              },
-              child: const Text('登录'),
-            ),
-            ElevatedButton(
-              child: const Text('注册账户'),
-              onPressed: () => Navigator.pushNamed(context, '/register'),
-            ),
-          ],
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: '密码',
+                  prefixIcon: const Icon(Icons.lock, color: Colors.blueAccent),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+              ),
+              const SizedBox(height: 24.0),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _login,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: const Text(
+                    '登录',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              // TextButton(
+              //   onPressed: () => Navigator.pushNamed(context, '/register'),
+              //   child: const Text(
+              //     "没有账户？点击注册",
+              //     style: TextStyle(color: Colors.blueAccent, fontSize: 14),
+              //   ),
+              // ),
+            ],
+          ),
         ),
       ),
     );
