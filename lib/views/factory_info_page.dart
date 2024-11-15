@@ -59,21 +59,23 @@ class _FactoryManagementPageState extends State<FactoryManagementPage> {
   Future<void> fetchData() async {
     try {
       // Fetch operating rate data
+      // 初始化12个月份为零数据
+      operatingRateData = List<double>.filled(12, 0.0);
+      operatingRateMonths = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+
+      // Fetch operating rate data
       var result = await NetworkUtil.getInstance().post("screen/combinedrate");
       if (result?.data['status'] == 200) {
         final monthlyRates = result?.data['data']['monthly_rates'];
         if (monthlyRates != null && monthlyRates.isNotEmpty) {
           final firstDeviceData = monthlyRates.values.first;
-          setState(() {
-            operatingRateData = [];
-            operatingRateMonths = [];
-            firstDeviceData.forEach((key, value) {
-              final rate = value['u_rate'];
-              if (rate != null && rate is num) {
-                operatingRateData.add(rate.toDouble());
-                operatingRateMonths.add(key.substring(5)); // 获取月份部分
-              }
-            });
+          firstDeviceData.forEach((key, value) {
+            final month = key.substring(5); // 获取月份部分（例如"10"表示十月）
+            final monthIndex = int.parse(month) - 1; // 转换为数组索引（0表示一月）
+            final rate = value['u_rate'];
+            if (rate != null && rate is num) {
+              operatingRateData[monthIndex] = rate.toDouble(); // 覆盖默认值
+            }
           });
         }
       }
@@ -125,7 +127,8 @@ class _FactoryManagementPageState extends State<FactoryManagementPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('工厂信息'),
+        title: const Text('工厂信息', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.blueAccent,
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -133,11 +136,11 @@ class _FactoryManagementPageState extends State<FactoryManagementPage> {
               onTap: _openLargeScreenUrl,
               child: Row(
                 children: [
-                  const Icon(Icons.fullscreen, color: Colors.blue),
+                  const Icon(Icons.fullscreen, color: Colors.white),
                   const SizedBox(width: 5),
                   const Text(
                     "大屏展示",
-                    style: TextStyle(color: Colors.blue, fontSize: 14),
+                    style: TextStyle(color: Colors.white, fontSize: 14),
                   ),
                 ],
               ),
@@ -174,7 +177,7 @@ class _FactoryManagementPageState extends State<FactoryManagementPage> {
             const SizedBox(height: 10),
             Divider(),
             Padding(
-              padding: const EdgeInsets.all(4.0),
+              padding: const EdgeInsets.all(0.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -192,60 +195,41 @@ class _FactoryManagementPageState extends State<FactoryManagementPage> {
                         return Center(child: Text('错误: ${snapshot.error}'));
                       } else if (snapshot.hasData) {
                         List<Order> orders = snapshot.data!;
-
-                        return Table(
-                          border: TableBorder.all(),
-                          columnWidths: const <int, TableColumnWidth>{
-                            0: FlexColumnWidth(2),
-                            1: FlexColumnWidth(2),
-                            2: FlexColumnWidth(3),
-                          },
-                          children: [
-                            TableRow(
-                              decoration: BoxDecoration(color: Colors.grey[300]),
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    "型号",
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    "数量",
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    "工序",
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            // 动态生成数据行
-                            for (var order in orders)
-                              TableRow(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(order.order_type), // 型号
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(order.item_number.toString()), // 数量
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(order.procedure_name), // 工序
-                                  ),
-                                ],
+                        return Column(
+                          children: orders.map((order) {
+                            return Card(
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              elevation: 3,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                          ],
+                              color: Colors.white,
+                              child: Padding(
+                                padding: const EdgeInsets.all(0.0),
+                                child: ListTile(
+                                  title: Text(
+                                    "型号: ${order.order_type}",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 5),
+                                      Text("数量: ${order.item_number}"),
+                                      SizedBox(height: 5),
+                                      Text("工序: ${order.procedure_name}"),
+                                    ],
+                                  ),
+                                  leading: Icon(
+                                    Icons.assignment,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
                         );
                       } else {
                         return Center(child: Text('未找到工单信息'));

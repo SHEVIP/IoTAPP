@@ -255,7 +255,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         type: BottomNavigationBarType.fixed,
         items: _navItems,
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Colors.blue[400],
         onTap: _onItemTapped,
       ),
     );

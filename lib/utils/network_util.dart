@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 
 class NetworkUtil {
   late final Dio _dio;
-  String baseUrl = "http://lc-cdn.vip.cpolar.cn/api/v1/";
+  String baseUrl = "http://lccdn.xiaomy.net/api/v1/";
   Map<String, String>? headers;
 
   // 单例模式

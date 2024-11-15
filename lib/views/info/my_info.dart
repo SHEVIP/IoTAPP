@@ -5,8 +5,6 @@ import 'package:untitled/views/info/my_info_detail_page.dart';
 import 'work_hours_details_page.dart';
 import 'package:untitled/utils/prefs_util.dart';
 import 'package:untitled/utils/network_util.dart';
-// import 'package:untitled/views/info/wifi_connect.dart';
-import 'package:untitled/views/info/esptouch_full.dart';
 import '../../model/work_hours.dart';
 
 class MyInfoPage extends StatefulWidget {
@@ -15,7 +13,6 @@ class MyInfoPage extends StatefulWidget {
   @override
   State<MyInfoPage> createState() => _MyInfoPageState();
 }
-
 
 class _MyInfoPageState extends State<MyInfoPage> {
   double todayWorkHours = 0.0;
@@ -30,7 +27,6 @@ class _MyInfoPageState extends State<MyInfoPage> {
 
   fetchWorkHours() async {
     int workerId = CommonPreferences.workerid.value;
-    // 两个方法来获取今日和当月的工时
     var todayHours = await getTodayWorkHours(workerId);
     var monthHours = await getMonthlyWorkHours(workerId);
     setState(() {
@@ -38,177 +34,6 @@ class _MyInfoPageState extends State<MyInfoPage> {
       monthlyWorkHours = monthHours;
     });
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   final String name = CommonPreferences.workername.value;
-  //   final int workerid = CommonPreferences.workerid.value;
-  //   final String workertype = CommonPreferences.workertype.value;
-  //
-  //   return Scaffold(
-  //     appBar: AppBar(
-  //       title: const Text('个人信息'),
-  //       backgroundColor: Colors.grey[200],
-  //       centerTitle: true,
-  //     ),
-  //     body: Container(
-  //       color: Colors.grey[200],
-  //       child: Column(
-  //         children: <Widget>[
-  //           Expanded(
-  //             child: ListView(
-  //               children: <Widget>[
-  //                 InkWell(
-  //                   onTap: () {
-  //                     Navigator.push(
-  //                         context,
-  //                         MaterialPageRoute(
-  //                             builder: (context) => const MyInfoDetailPage()));
-  //                   },
-  //                   child: Container(
-  //                     height: 150.0,
-  //                     padding: const EdgeInsets.all(10.0),
-  //                     child: Row(
-  //                       children: <Widget>[
-  //                         const SizedBox(width: 10.0),
-  //                         const CircleAvatar(
-  //                           radius: 50,
-  //                           backgroundImage: AssetImage('assets/images/worker.png'),
-  //                         ),
-  //                         const SizedBox(width: 10.0),
-  //                         Expanded(
-  //                           child: Padding(
-  //                             padding: const EdgeInsets.symmetric(horizontal: 10.0),
-  //                             child: Column(
-  //                               crossAxisAlignment: CrossAxisAlignment.start,
-  //                               mainAxisAlignment: MainAxisAlignment.center,
-  //                               children: [
-  //                                 Text(
-  //                                   name,
-  //                                   style: const TextStyle(
-  //                                     fontWeight: FontWeight.bold,
-  //                                     fontSize: 26,
-  //                                   ),
-  //                                 ),
-  //                                 const SizedBox(height: 16.0),
-  //                                 Row(
-  //                                   children: [
-  //                                     Text(
-  //                                       '工号: $workerid',
-  //                                       style: const TextStyle(color: Colors.blue, fontSize: 18),
-  //                                     ),
-  //                                     const SizedBox(width: 20.0),
-  //                                     Text(
-  //                                       '工种: $workertype',
-  //                                       style: const TextStyle(color: Colors.grey, fontSize: 18),
-  //                                     ),
-  //                                   ],
-  //                                 ),
-  //                               ],
-  //                             ),
-  //                           ),
-  //                         ),
-  //                         const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
-  //                         const SizedBox(width: 10.0),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 Card(
-  //                   margin: const EdgeInsets.all(12.0),
-  //                   child: Padding(
-  //                     padding: const EdgeInsets.all(12.0),
-  //                     child: Row(
-  //                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //                       children: [
-  //                         Expanded(
-  //                           child: Column(
-  //                             children: [
-  //                               const Text(
-  //                                 '今日工时',
-  //                                 style: TextStyle(fontSize: 22),
-  //                               ),
-  //                               const SizedBox(height: 6),
-  //                               Text(
-  //                                 '${todayWorkHours.toStringAsFixed(1)}小时',
-  //                                 style: const TextStyle(fontSize: 14, color: Colors.green),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ),
-  //                         Container(
-  //                           height: 60,
-  //                           width: 3,
-  //                           color: Colors.grey[400],
-  //                           margin: const EdgeInsets.symmetric(horizontal: 12),
-  //                         ),
-  //                         Expanded(
-  //                           child: Column(
-  //                             children: [
-  //                               const Text(
-  //                                 '本月累计工时',
-  //                                 style: TextStyle(fontSize: 22),
-  //                               ),
-  //                               const SizedBox(height: 6),
-  //                               Text(
-  //                                 '${monthlyWorkHours.toStringAsFixed(1)}小时',
-  //                                 style: const TextStyle(fontSize: 14, color: Colors.green),
-  //                               ),
-  //                             ],
-  //                           ),
-  //                         ),
-  //                       ],
-  //                     ),
-  //                   ),
-  //                 ),
-  //                 // Center(
-  //                 //   child: Container(
-  //                 //     width: MediaQuery.of(context).size.width * 0.6,
-  //                 //     child: ElevatedButton(
-  //                 //       onPressed: () => Navigator.push(
-  //                 //         context,
-  //                 //         MaterialPageRoute(builder: (context) => esptouch()),
-  //                 //       ),
-  //                 //       child: const Text('为网联设备配对WIFI', style: TextStyle(fontSize: 18)),
-  //                 //       style: ElevatedButton.styleFrom(
-  //                 //         primary: Colors.white,
-  //                 //         onPrimary: Colors.lightBlue[500],
-  //                 //         elevation: 2,
-  //                 //         shape: RoundedRectangleBorder(
-  //                 //           borderRadius: BorderRadius.circular(8),
-  //                 //         ),
-  //                 //         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 15),
-  //                 //       ),
-  //                 //     ),
-  //                 //   ),
-  //                 // ),
-  //               ],
-  //             ),
-  //           ),
-  //           // 将“退出登录”按钮固定在底部
-  //           Padding(
-  //             padding: const EdgeInsets.all(16.0),
-  //             child: ElevatedButton(
-  //               onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
-  //               style: ElevatedButton.styleFrom(
-  //                 primary: Colors.blue, // 按钮背景颜色
-  //                 onPrimary: Colors.white, // 按钮文字颜色
-  //                 minimumSize: Size(double.infinity, 50), // 按钮宽度和高度
-  //                 shape: RoundedRectangleBorder(
-  //                   borderRadius: BorderRadius.circular(12), // 按钮圆角
-  //                 ),
-  //               ),
-  //               child: const Text(
-  //                 '退出登录',
-  //                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-  //               ),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -218,9 +43,11 @@ class _MyInfoPageState extends State<MyInfoPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('个人信息'),
-        backgroundColor: Colors.grey[200],
+        title: const Text('个人信息', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.blueAccent,
         centerTitle: true,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       body: Container(
         color: Colors.grey[200],
@@ -228,6 +55,7 @@ class _MyInfoPageState extends State<MyInfoPage> {
           children: <Widget>[
             Expanded(
               child: ListView(
+                padding: const EdgeInsets.all(12.0),
                 children: <Widget>[
                   InkWell(
                     onTap: () {
@@ -239,125 +67,122 @@ class _MyInfoPageState extends State<MyInfoPage> {
                       );
                     },
                     child: Container(
-                      height: 150.0,
-                      padding: const EdgeInsets.all(10.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(16.0),
                       child: Row(
                         children: <Widget>[
-                          const SizedBox(width: 10.0),
                           const CircleAvatar(
                             radius: 50,
                             backgroundImage: AssetImage('assets/images/worker.png'),
                           ),
-                          const SizedBox(width: 10.0),
+                          const SizedBox(width: 16.0),
                           Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    name,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 26,
-                                    ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 24,
                                   ),
-                                  const SizedBox(height: 16.0),
-                                  permission_id == 2
-                                      ? Row(
-                                    children: [
-                                      Text(
-                                        '工号: $workerid',
-                                        style: const TextStyle(
-                                            color: Colors.blue, fontSize: 18),
-                                      ),
-                                      const SizedBox(width: 20.0),
-                                      Text(
-                                        '工种: $workertype',
-                                        style: const TextStyle(
-                                            color: Colors.grey, fontSize: 18),
-                                      ),
-                                    ],
-                                  )
-                                      : Container(), // 如果 permission_id 为 1，则显示空白容器
+                                ),
+                                const SizedBox(height: 8.0),
+                                if (permission_id == 2) ...[
+                                  Text(
+                                    '工号: $workerid',
+                                    style: const TextStyle(color: Colors.blue, fontSize: 16),
+                                  ),
+                                  const SizedBox(width: 8.0),
+                                  Text(
+                                    '工种: $workertype',
+                                    style: const TextStyle(color: Colors.grey, fontSize: 16),
+                                  ),
                                 ],
-                              ),
+                              ],
                             ),
                           ),
-                          const Icon(Icons.arrow_forward_ios,
-                              color: Colors.grey, size: 16),
-                          const SizedBox(width: 10.0),
+                          const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 16),
                         ],
                       ),
                     ),
                   ),
-                  permission_id == 2
-                      ? Card(
-                    margin: const EdgeInsets.all(12.0),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              children: [
-                                const Text(
-                                  '今日工时',
-                                  style: TextStyle(fontSize: 22),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  '${todayWorkHours.toStringAsFixed(1)}小时',
-                                  style: const TextStyle(
-                                      fontSize: 14, color: Colors.green),
-                                ),
-                              ],
+                  if (permission_id == 2)
+                    Card(
+                      margin: const EdgeInsets.symmetric(vertical: 16.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    '今日工时',
+                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '${todayWorkHours.toStringAsFixed(1)}小时',
+                                    style: const TextStyle(fontSize: 16, color: Colors.green),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          Container(
-                            height: 60,
-                            width: 3,
-                            color: Colors.grey[400],
-                            margin:
-                            const EdgeInsets.symmetric(horizontal: 12),
-                          ),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                const Text(
-                                  '本月累计工时',
-                                  style: TextStyle(fontSize: 22),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  '${monthlyWorkHours.toStringAsFixed(1)}小时',
-                                  style: const TextStyle(
-                                      fontSize: 14, color: Colors.green),
-                                ),
-                              ],
+                            Container(
+                              height: 50,
+                              width: 1,
+                              color: Colors.grey[400],
+                              margin: const EdgeInsets.symmetric(horizontal: 12),
                             ),
-                          ),
-                        ],
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    '本月累计工时',
+                                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '${monthlyWorkHours.toStringAsFixed(1)}小时',
+                                    style: const TextStyle(fontSize: 16, color: Colors.green),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  )
-                      : Container(), // 如果 permission_id 为 1，则显示空白容器
                 ],
               ),
             ),
-            // 将“退出登录”按钮固定在底部
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.blue, // 按钮背景颜色
-                  onPrimary: Colors.white, // 按钮文字颜色
-                  minimumSize: Size(double.infinity, 50), // 按钮宽度和高度
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // 按钮圆角
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 child: const Text(
@@ -371,8 +196,6 @@ class _MyInfoPageState extends State<MyInfoPage> {
       ),
     );
   }
-
-
 }
 
 Future<double> getTodayWorkHours(int workerId) async {
@@ -386,7 +209,7 @@ Future<double> getTodayWorkHours(int workerId) async {
   if (result?.data['status'] == 200) {
     var items = result?.data['data']['item'];
     double todayHours = 0.0;
-    for (var item in items?? []) {
+    for (var item in items ?? []) {
       var workHours = WorkHours.fromJson(item).getWorkHours();
       todayHours += workHours;
     }
@@ -409,7 +232,7 @@ Future<double> getMonthlyWorkHours(int workerId) async {
   if (result?.data['status'] == 200) {
     var items = result?.data['data']['item'];
     double monthlyHours = 0.0;
-    for (var item in items?? []) {
+    for (var item in items ?? []) {
       var workHours = WorkHours.fromJson(item).getWorkHours();
       monthlyHours += workHours;
     }
@@ -419,4 +242,3 @@ Future<double> getMonthlyWorkHours(int workerId) async {
     return 0.0;
   }
 }
-

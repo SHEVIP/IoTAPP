@@ -1,0 +1,2 @@
+-keep class org.videolan.** { *; }
+-dontwarn org.videolan.**
